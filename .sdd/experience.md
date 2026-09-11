@@ -148,3 +148,10 @@
 - 最终回归只复查全链路与 `docs/startup.md`，不替代各任务首次联调。
 - 用户门禁默认：FE `5175` → BE `8003`；`VITE_USE_MOCK=false`。
 - 导航门禁：`AppShell` 不得出现「情绪图谱」。
+
+## 2026-09-11｜PaaS deploy
+
+- 生产用单容器同域：Vite `dist` + FastAPI；`VITE_API_BASE_URL=/api`，避免跨域。
+- 配置仍禁止 `ConfigManager(use_env=True)`；PaaS 用显式 allow-list 进程环境覆盖（`_paas_env_overlay`），`.env` 文件优先被覆盖。
+- Railway/Render 的 `DATABASE_URL` 常为 `postgresql://`：启动时归一为 `postgresql+asyncpg://`，`sslmode=` → `ssl=`。
+- 个人未接邮件时保持 `MAIL_DEV_PRINT=true`，从 Deploy Logs 取验证链接。

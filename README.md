@@ -63,9 +63,13 @@ npm run dev -- --host 127.0.0.1 --port 5175 --strictPort
 - API 契约：[`docs/api-contracts.md`](docs/api-contracts.md)
 - 本地启动：[`docs/startup.md`](docs/startup.md)
 
+## 部署（PaaS）
+
+个人正式使用：Railway 单容器（前端静态 + FastAPI）+ 托管 Postgres。步骤见 [`docs/deploy.md`](docs/deploy.md)。
+
 ## 说明
 
-本仓库为个人作品 / 可自托管源码。请勿提交真实 `.env`、密钥或用户日记数据。上线部署方案另议（同域静态前端 + `/api` 反代 + Postgres）。
+本仓库为个人作品 / 可自托管源码。请勿提交真实 `.env`、密钥或用户日记数据。
 
 ## License
 

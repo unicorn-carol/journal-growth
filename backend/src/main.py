@@ -2,7 +2,8 @@
 
 from pathlib import Path
 
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pycore.api import APIConfig, APIServer
 from pycore.core import Logger, LoggerConfig, LogLevel, get_logger
 
@@ -36,6 +37,11 @@ if not upload_path.is_absolute():
     upload_path = Path(__file__).resolve().parents[2] / settings.upload_dir
 upload_path.mkdir(parents=True, exist_ok=True)
 
+# Same-origin SPA: include public URL so email verify links and CORS stay aligned.
+cors_origins = list(settings.cors_origins)
+if settings.frontend_public_url and settings.frontend_public_url not in cors_origins:
+    cors_origins.append(settings.frontend_public_url)
+
 server = APIServer(
     APIConfig(
         title="漫长游记 API",
@@ -44,7 +50,7 @@ server = APIServer(
         host=settings.host,
         port=settings.port,
         debug=settings.debug,
-        cors_origins=list(settings.cors_origins),
+        cors_origins=cors_origins,
     )
 )
 server.include_router(health_router)
@@ -70,5 +76,38 @@ async def app_error_handler(_request: object, exc: AppError) -> JSONResponse:
         content={"code": exc.code, "message": exc.message, "data": None},
     )
 
+
+def _mount_spa() -> None:
+    """Serve Vite build at STATIC_DIR (PaaS single-service)."""
+    if not settings.static_dir:
+        return
+    static_root = Path(settings.static_dir)
+    if not static_root.is_absolute():
+        static_root = Path(__file__).resolve().parents[2] / settings.static_dir
+    index = static_root / "index.html"
+    if not index.is_file():
+        logger.warning("STATIC_DIR set but index.html missing", path=str(static_root))
+        return
+
+    assets = static_root / "assets"
+    if assets.is_dir():
+        app.mount("/assets", StaticFiles(directory=str(assets)), name="spa-assets")
+
+    @app.get("/")
+    async def spa_index() -> FileResponse:
+        return FileResponse(index)
+
+    @app.get("/{full_path:path}")
+    async def spa_fallback(full_path: str) -> FileResponse:
+        # Never shadow /api/* — those routes are registered above.
+        candidate = static_root / full_path
+        if candidate.is_file():
+            return FileResponse(candidate)
+        return FileResponse(index)
+
+    logger.info("SPA static mounted", path=str(static_root))
+
+
+_mount_spa()
 
 logger.info("App ready", host=settings.host, port=settings.port)
