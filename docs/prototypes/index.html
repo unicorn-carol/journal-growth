@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>漫长游记 · 高保真原型</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./assets/proto.css" />
+</head>
+<body>
+  <!-- 登录 -->
+  <div id="auth" class="auth-page hidden">
+    <div class="auth-card">
+      <h1>漫长游记</h1>
+      <p>记录碎片，回看自己如何一步步变化。</p>
+      <div class="field"><label>邮箱</label><input type="email" value="you@mail.com" /></div>
+      <div class="field"><label>密码</label><input type="password" value="••••••••" /></div>
+      <button class="btn-primary" style="width:100%" onclick="enterApp()">登录</button>
+      <div class="links">还没有账号？<a href="#" onclick="alert('注册页示意：邮箱+密码+验证邮件');return false">注册</a></div>
+    </div>
+  </div>
+
+  <div id="app" class="app-shell diary">
+    <aside class="sidebar">
+      <div class="side-head">
+        <div class="avatar" id="avatar" title="账号"></div>
+        <div class="side-title">漫长游记<small>个人成长日志</small></div>
+        <div class="avatar-pop" id="avatarPop">
+          <div class="mail">you@mail.com</div>
+          <button type="button" onclick="go('settings')">进入我的页面</button>
+        </div>
+      </div>
+      <nav class="nav" id="nav">
+        <a href="#" data-view="diary" class="active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h11a2 2 0 0 1 2 2v14l-4-2-4 2-4-2-4 2V6a2 2 0 0 1 2-2z"/></svg>
+          <span>日记</span>
+        </a>
+        <a href="#" data-view="cognize">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3"/><path d="M5 19c1.5-3 4-4.5 7-4.5S17.5 16 19 19"/></svg>
+          <span>自我认知</span>
+        </a>
+        <a href="#" data-view="moments">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>
+          <span>美好时光</span>
+        </a>
+        <a href="#" data-view="import">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v10m0 0 3-3m-3 3-3-3M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2"/></svg>
+          <span>导入</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- 日记中栏 -->
+    <section class="mid" id="mid">
+      <div class="mid-tools">
+        <button class="icon-btn" title="标签筛选" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M6 12h12M10 18h4"/></svg>
+        </button>
+        <button class="icon-btn" title="情绪筛选" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M8.5 14s1.2 1.5 3.5 1.5 3.5-1.5 3.5-1.5"/></svg>
+        </button>
+        <button class="icon-btn" title="搜索" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></svg>
+        </button>
+        <span class="spacer"></span>
+        <button class="btn-soft" type="button" onclick="alert('新建空白日记（示意）')">写日记</button>
+      </div>
+      <div class="list">
+        <div class="month">2026年8月</div>
+        <article class="entry active">
+          <div class="datebox"><div class="w">周五</div><div class="n">29</div></div>
+          <div>
+            <h4>关于工作节奏</h4>
+            <p>开完会后有点空。对着文档改了两小时，后来散步时想起钱与安全感……</p>
+            <div class="entry-meta">
+              <span class="shape-mini" title="平静">
+                <svg width="28" height="14" viewBox="0 0 56 28"><path d="M2,10 C14,2 22,2 28,10 C34,18 42,18 54,10 L54,26 C42,18 34,18 28,26 C22,18 14,18 2,26 Z" fill="#5EC8C0"/></svg>
+              </span>
+              <span class="pill">工作状态</span>
+              <span class="pill">平静</span>
+            </div>
+          </div>
+        </article>
+        <article class="entry">
+          <div class="datebox"><div class="w">周三</div><div class="n">20</div></div>
+          <div>
+            <h4>和朋友聊完</h4>
+            <p>聊完关系话题后有点紧，夜里反复想自己是不是太敏感。</p>
+            <div class="entry-meta">
+              <span class="shape-mini" title="紧张">
+                <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6" fill="#A855F7"/><circle cx="12" cy="4" r="1.4" fill="#A855F7"/><circle cx="18.5" cy="7" r="1.3" fill="#A855F7"/><circle cx="19" cy="14" r="1.2" fill="#A855F7"/><circle cx="5.5" cy="7" r="1.3" fill="#A855F7"/><circle cx="5" cy="14" r="1.2" fill="#A855F7"/></svg>
+              </span>
+              <span class="pill">人际关系</span>
+              <span class="pill">焦虑</span>
+            </div>
+          </div>
+        </article>
+        <article class="entry">
+          <div class="datebox"><div class="w">周日</div><div class="n">10</div></div>
+          <div>
+            <h4>周末空档</h4>
+            <p>整个人提不起劲，像一滩软泥摊在沙发上。</p>
+            <div class="entry-meta">
+              <span class="shape-mini" title="疲惫">
+                <svg width="30" height="12" viewBox="0 0 60 24"><ellipse cx="30" cy="16" rx="26" ry="7" fill="#5B6CFF"/></svg>
+              </span>
+              <span class="pill">生活探索</span>
+              <span class="pill">疲惫</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 主内容 -->
+    <main class="main" id="main">
+      <!-- 日记正文 -->
+      <section class="view on" id="view-diary">
+        <div class="main-head">
+          <div style="flex:1">
+            <div class="main-date">2026年8月29日 · 周五</div>
+            <input class="main-title" value="关于工作节奏" />
+          </div>
+          <button class="btn-soft" type="button">保存</button>
+        </div>
+
+        <div class="tag-row">
+          <span class="pill">工作状态 <button class="x" type="button">×</button></span>
+          <span class="pill">金钱观 <button class="x" type="button">×</button></span>
+          <span class="pill">平静 <button class="x" type="button">×</button></span>
+          <span class="pill ai" onclick="toggleAi()">+ AI 建议</span>
+        </div>
+
+        <div class="ai-bar" id="aiBar">
+          <span>AI 建议：</span>
+          <span class="pill">自我认知</span>
+          <span class="pill">疲惫</span>
+          <div class="actions">
+            <button class="btn-soft" type="button">采纳全部</button>
+            <button class="btn-soft" type="button" onclick="toggleAi()">忽略</button>
+          </div>
+        </div>
+
+        <div class="editor" contenteditable="true">
+          今天开完会后有点空。
+          <span class="hl-energy" id="hlEnergy" title="点击查看能量批注">对着文档改了两小时</span>，
+          感觉既投入又有点耗。后来出门散步，风很大，突然想起
+          <span class="hl-topic" id="hlTopic" title="点击查看话题批注">钱到底是不是安全感的来源</span>。
+          我希望把这些碎片留下，以后还能看见自己怎么一步步想明白的。
+        </div>
+        <div class="updated">最近更新：2026-08-29 21:14</div>
+
+        <div class="energy-card">
+          <h5>本篇能量标记</h5>
+          <div class="energy-row">
+            <span>摘录：对着文档改了两小时</span>
+            <span class="hearts">专注度 ♡♡♡♡</span>
+            <span class="bolts">能量消耗 ⚡⚡⚡</span>
+          </div>
+        </div>
+
+        <!-- M01 -->
+        <div class="pop hidden" id="popEnergy" style="top:280px;right:40px">
+          <h5>能量记录</h5>
+          <div class="quote">对着文档改了两小时</div>
+          <div class="rate-row">
+            <span>专注度</span>
+            <div class="rate-icons" data-rate="focus">
+              <button type="button" class="on">♡</button><button type="button" class="on">♡</button><button type="button" class="on">♡</button><button type="button" class="on">♡</button><button type="button">♡</button>
+            </div>
+          </div>
+          <div class="rate-row">
+            <span>能量消耗</span>
+            <div class="rate-icons" data-rate="drain">
+              <button type="button" class="on">⚡</button><button type="button" class="on">⚡</button><button type="button" class="on">⚡</button><button type="button">⚡</button><button type="button">⚡</button>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+            <button class="btn-soft" type="button" onclick="hidePops()">关闭</button>
+            <button class="btn-soft" type="button" onclick="hidePops()">保存</button>
+          </div>
+        </div>
+
+        <!-- M02 -->
+        <div class="pop hidden" id="popTopic" style="top:320px;right:40px">
+          <h5>话题 / 情绪</h5>
+          <div class="quote">钱到底是不是安全感的来源</div>
+          <div style="font-size:12px;color:var(--sub)">思考类</div>
+          <div class="chip-grid">
+            <button class="chip on" type="button">金钱观</button>
+            <button class="chip" type="button">价值判断</button>
+            <button class="chip" type="button">人生观</button>
+            <button class="chip" type="button">自我认知</button>
+          </div>
+          <div style="font-size:12px;color:var(--sub);margin-top:10px">情绪类</div>
+          <div class="chip-grid">
+            <button class="chip" type="button">平静</button>
+            <button class="chip on" type="button">迷茫</button>
+            <button class="chip" type="button">焦虑</button>
+            <button class="chip" type="button">期待</button>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+            <button class="btn-soft" type="button" onclick="hidePops()">关闭</button>
+            <button class="btn-soft" type="button" onclick="hidePops()">保存</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 自我认知 -->
+      <section class="view fill" id="view-cognize">
+        <h2 class="page-title">自我认知</h2>
+        <p class="page-sub">按话题横向筛选，下方用时间线回看相关想法。</p>
+        <div class="topic-bar" id="topicBar">
+          <button type="button" class="on">金钱观</button>
+          <button type="button">人际关系</button>
+          <button type="button">职业规划</button>
+          <button type="button">人生观</button>
+          <button type="button">健康</button>
+        </div>
+        <article class="timeline-card" onclick="go('diary')">
+          <div class="when">2026-08-29</div>
+          <div class="text">「钱到底是不是安全感的来源」——开始怀疑把安全感完全押在存款上。</div>
+        </article>
+        <article class="timeline-card" onclick="go('diary')">
+          <div class="when">2025-12-03</div>
+          <div class="text">「总觉得存钱才能安心。」——当时几乎把安全感等同于账户数字。</div>
+        </article>
+        <article class="timeline-card" onclick="go('diary')">
+          <div class="when">2025-06-18</div>
+          <div class="text">「先别管意义，把钱攒够再说。」——更偏生存优先的阶段。</div>
+        </article>
+      </section>
+
+      <!-- 情绪图谱：本期不做（后置），保留 HTML 仅作存档 -->
+      <section class="view fill" id="view-emotion" style="display:none" aria-hidden="true">
+        <h2 class="page-title">情绪图谱（本期不做）</h2>
+        <p class="page-sub">横向时间轴；同一天可叠多种情绪图案（水波 / 毛毛球 / 软泥…）。</p>
+        <div class="seg">
+          <button type="button" class="on">日</button>
+          <button type="button">周</button>
+          <button type="button">月</button>
+        </div>
+        <div class="emotion-chart">
+          <div class="emotion-row">
+            <div class="label">喜悦</div>
+            <div class="emotion-axis">
+              <div class="emotion-mark" style="left:18%">
+                <svg width="28" height="28"><circle cx="14" cy="14" r="12" fill="#FFB020"/><circle cx="10" cy="12" r="1.5" fill="#2C2925"/><circle cx="18" cy="12" r="1.5" fill="#2C2925"/><path d="M9 17c2 2 8 2 10 0" stroke="#2C2925" fill="none" stroke-width="1.5"/></svg>
+              </div>
+              <div class="emotion-mark" style="left:72%">
+                <svg width="28" height="28"><circle cx="14" cy="14" r="12" fill="#FFB020"/><circle cx="10" cy="12" r="1.5" fill="#2C2925"/><circle cx="18" cy="12" r="1.5" fill="#2C2925"/><path d="M9 17c2 2 8 2 10 0" stroke="#2C2925" fill="none" stroke-width="1.5"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="emotion-row">
+            <div class="label">平静</div>
+            <div class="emotion-axis">
+              <div class="emotion-mark" style="left:40%">
+                <svg width="54" height="24" viewBox="0 0 56 28"><path d="M2,10 C14,2 22,2 28,10 C34,18 42,18 54,10 L54,26 C42,18 34,18 28,26 C22,18 14,18 2,26 Z" fill="#5EC8C0"/></svg>
+              </div>
+              <div class="emotion-mark" style="left:86%">
+                <svg width="54" height="24" viewBox="0 0 56 28"><path d="M2,10 C14,2 22,2 28,10 C34,18 42,18 54,10 L54,26 C42,18 34,18 28,26 C22,18 14,18 2,26 Z" fill="#5EC8C0"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="emotion-row">
+            <div class="label">紧张</div>
+            <div class="emotion-axis">
+              <div class="emotion-mark" style="left:55%">
+                <svg width="28" height="28" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6" fill="#A855F7"/><circle cx="12" cy="4" r="1.4" fill="#A855F7"/><circle cx="18.5" cy="7" r="1.3" fill="#A855F7"/><circle cx="19" cy="14" r="1.2" fill="#A855F7"/><circle cx="5.5" cy="7" r="1.3" fill="#A855F7"/><circle cx="5" cy="14" r="1.2" fill="#A855F7"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="emotion-row">
+            <div class="label">低落</div>
+            <div class="emotion-axis">
+              <div class="emotion-mark" style="left:30%">
+                <svg width="48" height="16" viewBox="0 0 60 24"><ellipse cx="30" cy="16" rx="26" ry="7" fill="#5B6CFF"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="axis-labels"><span>08-10</span><span>08-20</span><span>08-29</span><span>09-01</span></div>
+        </div>
+        <article class="timeline-card" onclick="go('diary')">
+          <div class="when">2026-08-29 · 平静</div>
+          <div class="text">关于工作节奏 · 点击回到日记定位</div>
+        </article>
+      </section>
+
+      <!-- 美好时光 -->
+      <section class="view fill" id="view-moments">
+        <h2 class="page-title">美好时光</h2>
+        <p class="page-sub">上四宫格，下切片列表；另可为每个象限记录观察与共性。</p>
+        <div class="quad-wrap">
+          <div class="quad-tools">
+            <span class="pill" style="background:var(--primary-soft);color:var(--primary)">默认近 10 篇</span>
+            <button class="btn-soft" type="button">改篇数</button>
+            <button class="btn-soft" type="button">时间区间</button>
+            <button class="btn-soft" type="button">切片倒序</button>
+          </div>
+          <div class="quad-grid">
+            <div class="quad-cell active" data-zone="高专注 · 低消耗">
+              <div class="name">高专注 · 低消耗</div>
+              <div class="quad-dot" style="left:58%;top:42%" onclick="event.stopPropagation();selectSlice('单点：文档改写')"></div>
+            </div>
+            <div class="quad-cell" data-zone="高专注 · 高消耗">
+              <div class="name">高专注 · 高消耗</div>
+              <div class="quad-dot" style="left:40%;top:60%;background:var(--drain)" onclick="event.stopPropagation();selectSlice('单点：赶方案')"></div>
+            </div>
+            <div class="quad-cell" data-zone="低专注 · 低消耗"><div class="name">低专注 · 低消耗</div></div>
+            <div class="quad-cell" data-zone="低专注 · 高消耗"><div class="name">低专注 · 高消耗</div></div>
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="panel">
+            <h5 id="sliceTitle">切片 · 高专注 · 低消耗</h5>
+            <div class="slice" onclick="go('diary')">08-29 · 「对着文档改了两小时」 · ♡4 ⚡3</div>
+            <div class="slice" onclick="go('diary')">08-18 · 「整理书桌时很投入」 · ♡5 ⚡2</div>
+            <div class="slice" onclick="go('diary')">08-05 · 「画画两小时」 · ♡5 ⚡1</div>
+          </div>
+          <div class="panel">
+            <h5>象限观察记录</h5>
+            <div style="font-size:12px;color:var(--sub);margin-bottom:8px">当前归属：<strong id="zoneLabel">高专注 · 低消耗</strong></div>
+            <textarea class="note-input" placeholder="记录这个象限里的共性或想法…"></textarea>
+            <div style="margin-top:8px;text-align:right"><button class="btn-soft" type="button">保存观察</button></div>
+            <div class="note-item">这类事往往让我又专注又轻松——多半是有完整时间块、且结果可见。</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 导入 -->
+      <section class="view fill" id="view-import">
+        <h2 class="page-title">日记导入</h2>
+        <p class="page-sub">从飞书导出 Markdown / docx 后上传。直连飞书 API 后置。</p>
+        <div class="wizard-steps">
+          <span class="on">1 上传</span><span>2 预览拆篇</span><span>3 入库</span>
+        </div>
+        <div class="upload-box">
+          <div style="font-family:var(--font-display);font-weight:800;font-size:18px;color:var(--text);margin-bottom:6px">拖入或选择文件</div>
+          支持 .md / .docx / 含多篇 Markdown 的 zip
+          <div style="margin-top:14px"><button class="btn-soft" type="button">选择文件</button></div>
+        </div>
+      </section>
+
+      <!-- 设置 -->
+      <section class="view fill" id="view-settings">
+        <h2 class="page-title">我的</h2>
+        <p class="page-sub">账号、密码与个人标签词库。</p>
+        <div class="settings-grid">
+          <div class="panel">
+            <h5>账号</h5>
+            <div class="field"><label>邮箱</label><input value="you@mail.com" readonly /></div>
+            <div class="field"><label>验证状态</label><input value="已验证" readonly /></div>
+            <button class="btn-soft" type="button" onclick="document.getElementById('auth').classList.remove('hidden');document.getElementById('app').classList.add('hidden')">退出登录</button>
+          </div>
+          <div class="panel">
+            <h5>修改密码</h5>
+            <div class="field"><label>当前密码</label><input type="password" /></div>
+            <div class="field"><label>新密码</label><input type="password" /></div>
+            <button class="btn-soft" type="button">更新密码</button>
+          </div>
+          <div class="panel">
+            <h5>思考类标签</h5>
+            <div class="tag-row">
+              <span class="pill">人际关系</span><span class="pill">金钱观</span><span class="pill">职业规划</span><span class="pill">+ 新增</span>
+            </div>
+          </div>
+          <div class="panel">
+            <h5>情绪类标签</h5>
+            <div class="tag-row">
+              <span class="pill">平静</span><span class="pill">焦虑</span><span class="pill">疲惫</span><span class="pill">喜悦</span><span class="pill">+ 新增</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="./assets/proto.js"></script>
+</body>
+</html>

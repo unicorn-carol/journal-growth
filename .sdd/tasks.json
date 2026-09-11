@@ -1,0 +1,974 @@
+{
+  "project": "漫长游记",
+  "project_type": "web",
+  "created": "2026-09-07",
+  "source_files": {
+    "prd": "docs/PRD.md",
+    "plan": "docs/Plan.md",
+    "api_contracts": "docs/api-contracts.md"
+  },
+  "runtime": {
+    "python": "/Users/yinjiasheng/.local/bin/python3.11",
+    "python_alias": "$PY",
+    "ports": {
+      "agent_frontend": 5199,
+      "agent_backend": 8099,
+      "user_frontend": 5175,
+      "user_backend": 8003
+    }
+  },
+  "constraints": [
+    "本期不做 P07 情绪图谱；侧栏与验收不得出现情绪图谱入口",
+    "能量仅用户划线；AI 不估能量、不写人生结论",
+    "LLM Key 后补：AI 任务允许 Mock/fallback，不得宣称 DeepSeek 真调通过",
+    "数据库 PostgreSQL（非 SQLite）",
+    "Vite 必须代理 /api；VITE_API_BASE_URL 用相对路径 /api",
+    "后端业务代码在 backend/src/；质量门禁仅覆盖 backend/src 与 backend/tests"
+  ],
+  "system_experience_applied": [
+    "后端业务任务必须任务内完成前端真实联调（frontendIntegration.required=true）",
+    "外部服务 LLM 已确认 fallback Mock",
+    "Vite 代理与相对 /api 必须写入基础设施与首个联调任务验收",
+    "固定高度容器预留 20% 缓冲（日记列表卡、象限卡）"
+  ],
+  "external_services": [
+    {
+      "name": "DeepSeek LLM",
+      "required": false,
+      "config_keys": [
+        "LLM_API_KEY",
+        "LLM_BASE_URL",
+        "LLM_MODEL"
+      ],
+      "tester_access_required": "有 Key 时可真调；当前无 Key",
+      "fallback_allowed": true,
+      "status": "fallback"
+    },
+    {
+      "name": "Mail",
+      "required": true,
+      "config_keys": [
+        "MAIL_DEV_PRINT"
+      ],
+      "tester_access_required": "开发期日志打印验证链接即可",
+      "fallback_allowed": false,
+      "status": "confirmed"
+    },
+    {
+      "name": "Local Upload",
+      "required": true,
+      "config_keys": [
+        "UPLOAD_DIR"
+      ],
+      "tester_access_required": "本地可写目录",
+      "fallback_allowed": false,
+      "status": "confirmed"
+    },
+    {
+      "name": "PostgreSQL",
+      "required": true,
+      "config_keys": [
+        "DATABASE_URL"
+      ],
+      "tester_access_required": "可连本地 Postgres",
+      "fallback_allowed": false,
+      "status": "confirmed"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T-001",
+      "title": "前端工程脚手架与全局壳层",
+      "type": "frontend",
+      "description": "在 Projects_Repo/journal-growth/frontend 初始化 Vite+React+TS+Ant Design+Zustand+Axios+react-router；配置纸色多巴胺主题 token；实现飞书式左侧导航壳（头像+产品名、日记/自我认知/美好时光/导入，无情绪图谱）；路由守卫占位；VITE_USE_MOCK=true；mocks 基建；vite proxy /api→8099；端口约定 5199。对照 docs/prototypes/journal_growth.pen。",
+      "source_feature": "Plan 阶段1 / 全局布局",
+      "acceptanceCriteria": [
+        "用户打开前端后看到纸色背景与左侧导航，导航含日记、自我认知、美好时光、导入，不含情绪图谱",
+        "侧栏顶部展示圆形头像与产品名「漫长游记」",
+        "未登录访问受保护路由时跳转到登录页"
+      ],
+      "technicalChecks": [
+        "npm run type-check 通过",
+        "npm run lint 通过",
+        "npm run build 通过",
+        "vite.config.ts 配置 server.proxy['/api'] 指向 http://localhost:8099",
+        "frontend/.env 中 VITE_API_BASE_URL=/api 且 VITE_USE_MOCK=true"
+      ],
+      "frontendIntegration": {
+        "required": false,
+        "pages": [
+          "AppShell"
+        ],
+        "services": [],
+        "realApiEndpoints": [],
+        "mockExitCriteria": []
+      },
+      "externalServices": [],
+      "dependencies": [],
+      "priority": 1,
+      "rules_files": [
+        "dev-standards/frontend.md"
+      ],
+      "status": "passed",
+      "developer_id": null,
+      "tester_id": "tester-local",
+      "retry_count": 0,
+      "blocked": false,
+      "notes": "PASS 2026-09-07; await user_gate",
+      "user_gate": true
+    },
+    {
+      "id": "T-002",
+      "title": "登录/注册/邮箱验证页 Mock",
+      "type": "frontend",
+      "description": "实现 P01 登录、P02 注册、P02b 验证结果页；Mock 对齐 api-contracts auth；未验证账号登录展示明确提示与重发入口；成功登录写入 Mock token 并进入日记路由。",
+      "source_feature": "F01 F02",
+      "acceptanceCriteria": [
+        "用户在登录页看到邮箱、密码、验证码输入与发送按钮，以及进入日记按钮",
+        "用户填写密码后需先发送并填写登录验证码，校验通过才可登录",
+        "用户点击去注册，进入注册页，可见邮箱、验证码、密码、确认密码与发送按钮",
+        "用户使用 Mock 已验证账号+正确验证码登录后进入日记工作台路由",
+        "用户使用 Mock 未验证账号登录时，页面提示需验证邮箱且提供重发入口，不进入主站"
+      ],
+      "technicalChecks": [
+        "npm run type-check 通过",
+        "npm run lint 通过",
+        "npm run build 通过",
+        "Mock 字段为 api-contracts.md 已定义字段子集"
+      ],
+      "frontendIntegration": {
+        "required": false,
+        "pages": [
+          "Login",
+          "Register",
+          "VerifyEmail"
+        ],
+        "services": [
+          "authService"
+        ],
+        "realApiEndpoints": [],
+        "mockExitCriteria": []
+      },
+      "externalServices": [],
+      "dependencies": [
+        "T-001"
+      ],
+      "priority": 2,
+      "rules_files": [
+        "dev-standards/frontend.md"
+      ],
+      "status": "passed",
+      "developer_id": null,
+      "tester_id": "tester-local",
+      "retry_count": 0,
+      "blocked": false,
+      "notes": "PASS after login OTP feedback 2026-09-07; await user_gate",
+      "user_gate": true
+    },
+    {
+      "id": "T-003",
+      "title": "日记工作台 Mock（三栏+浮窗+AI条）",
+      "type": "frontend",
+      "description": "实现 P03 左导航|中列表|右正文；中栏筛选图标+写日记；右栏日期标题标签正文、能量/话题高亮可辨、底部能量卡（无则不展示）、小号保存；M01/M02 浮窗；M03 AI 建议条采纳/忽略。Mock entries/highlights/ai。",
+      "source_feature": "F03 F04 F05 F06",
+      "acceptanceCriteria": [
+        "用户进入日记页看到三栏：中栏有写日记与示例列表，点击条目后右栏打开对应正文",
+        "正文为可编辑简易富文本：支持换行、工具栏加粗、更改字体颜色",
+        "用户选中正文文字后可「标记能量」或「标注话题」；亦可点击已有高亮打开浮窗编辑",
+        "能量浮窗专注度♡与能量消耗⚡支持 0–5、步进 0.5（半颗心/半闪电）",
+        "用户看到 AI 建议条后可点采纳全部或忽略，页面标签区随之变化",
+        "无能量标记的示例篇不展示底部能量卡片"
+      ],
+      "technicalChecks": [
+        "npm run type-check 通过",
+        "npm run lint 通过",
+        "npm run build 通过",
+        "Mock 与 api-contracts Entry/Highlight/AI 字段一致",
+        "列表/卡片固定高度预留缓冲，1440 视口无文字上下截断"
+      ],
+      "frontendIntegration": {
+        "required": false,
+        "pages": [
+          "DiaryWorkspace"
+        ],
+        "services": [
+          "entryService",
+          "highlightService",
+          "aiSuggestService"
+        ],
+        "realApiEndpoints": [],
+        "mockExitCriteria": []
+      },
+      "externalServices": [],
+      "dependencies": [
+        "T-002"
+      ],
+      "priority": 3,
+      "rules_files": [
+        "dev-standards/frontend.md"
+      ],
+      "status": "passed",
+      "developer_id": null,
+      "tester_id": "tester-local",
+      "retry_count": 1,
+      "blocked": false,
+      "notes": "PASS 2026-09-07 follow-up: rich text + selection create + half energy 0.5; build OK; await user_gate",
+      "user_gate": true
+    },
+    {
+      "id": "T-004",
+      "title": "自我认知页 Mock",
+      "type": "frontend",
+      "description": "实现 P06：顶横筛思考话题 + 下方时间线摘录；点击条目跳转日记路由并带 entry_id/highlight_id 定位参数（Mock 下打开对应日记）。",
+      "source_feature": "F07",
+      "acceptanceCriteria": [
+        "用户打开自我认知页，顶部可见话题筛选芯片，选中工作状态后下方时间线更新",
+        "用户点击某条时间线摘录，进入日记页并定位到对应条目（Mock 数据可演示）",
+        "页面无「你是否改变了」类 AI 结论文案"
+      ],
+      "technicalChecks": [
+        "npm run type-check 通过",
+        "npm run lint 通过",
+        "npm run build 通过",
+        "Mock 对齐 GET /api/insights/self-awareness"
+      ],
+      "frontendIntegration": {
+        "required": false,
+        "pages": [
+          "SelfAwareness"
+        ],
+        "services": [
+          "insightService"
+        ],
+        "realApiEndpoints": [],
+        "mockExitCriteria": []
+      },
+      "externalServices": [],
+      "dependencies": [
+        "T-003"
+      ],
+      "priority": 4,
+      "rules_files": [
+        "dev-standards/frontend.md"
+      ],
+      "status": "passed",
+      "developer_id": "developer-local",
+      "tester_id": "tester-local",
+      "retry_count": 0,
+      "blocked": false,
+      "notes": "PASS 2026-09-07; await user_gate",
+      "user_gate": true
+    },
+    {
+      "id": "T-005",
+      "title": "美好时光页 Mock",
+      "type": "frontend",
+      "description": "实现 P08：上四宫格、下切片列表、象限观察记录；默认近 10 篇能量标记范围的 Mock 散点；点象限/散点刷新下方切片。",
+      "source_feature": "F08",
+      "acceptanceCriteria": [
+        "用户打开美好时光页，上方看到四个象限区域，下方看到切片列表与观察记录区",
+        "用户点击某一象限后，下方切片列表只展示该象限相关切片",
+        "用户可在观察区看到归属象限的示例观察文案，并可编辑 Mock 观察内容后在本页看到更新"
+      ],
+      "technicalChecks": [
+        "npm run type-check 通过",
+        "npm run lint 通过",
+        "npm run build 通过",
+        "Mock 对齐 good-times 与 quadrant-notes",
+        "象限卡片高度预留缓冲"
+      ],
+      "frontendIntegration": {
+        "required": false,
+        "pages": [
+          "GoodTimes"
+        ],
+        "services": [
+          "insightService"
+        ],
+        "realApiEndpoints": [],
+        "mockExitCriteria": []
+      },
+      "externalServices": [],
+      "dependencies": [
+        "T-004"
+      ],
+      "priority": 5,
+      "rules_files": [
+        "dev-standards/frontend.md"
+      ],
+      "status": "passed",
+      "developer_id": "developer-local",
+      "tester_id": "tester-local",
+      "retry_count": 0,
+      "blocked": false,
+      "notes": "PASS 2026-09-07; await user_gate",
+      "user_gate": true
+    },
+    {
+      "id": "T-006",
+      "title": "导入页与我的设置页 Mock",
+      "type": "frontend",
+      "description": "实现 P09 上传→预览→结果向导 UI（Mock 进度/样例）；P10 账号信息、改密表单、标签词库增删改、退出登录。侧栏头像点击进我的。",
+      "source_feature": "F09 F10",
+      "acceptanceCriteria": [
+        "用户打开导入页，看到上传区与三步状态，选择/模拟上传后可看到预览样例与确认导入按钮",
+        "用户点击侧栏头像进入我的，可见邮箱账号、改密表单与思考/情绪标签词库",
+        "用户点击退出后回到登录页"
+      ],
+      "technicalChecks": [
+        "npm run type-check 通过",
+        "npm run lint 通过",
+        "npm run build 通过",
+        "Mock 对齐 imports 与 tags / change-password"
+      ],
+      "frontendIntegration": {
+        "required": false,
+        "pages": [
+          "Import",
+          "Settings"
+        ],
+        "services": [
+          "importService",
+          "tagService",
+          "authService"
+        ],
+        "realApiEndpoints": [],
+        "mockExitCriteria": []
+      },
+      "externalServices": [],
+      "dependencies": [
+        "T-005"
+      ],
+      "priority": 6,
+      "rules_files": [
+        "dev-standards/frontend.md"
+      ],
+      "status": "passed",
+      "developer_id": "developer-local",
+      "tester_id": "tester-local",
+      "retry_count": 0,
+      "blocked": false,
+      "notes": "PASS 2026-09-07; await user_gate (Mock UI overall)",
+      "user_gate": true
+    },
+    {
+      "id": "T-007",
+      "title": "后端基础设施：pycore 接入与健康检查",
+      "type": "backend",
+      "description": "创建 backend/src，基于 pycore.api.APIServer 与 ConfigManager；CORS 允许 5199/5175；GET /api/health；.env.example 含 DATABASE_URL/LLM_*/MAIL_DEV_PRINT/UPLOAD_DIR/JWT_SECRET；禁止重写 config/server/logger。",
+      "source_feature": "B00",
+      "acceptanceCriteria": [
+        "backend/src/main.py 使用 pycore.api.APIServer",
+        "backend/src/core/config.py 使用 pycore.core.ConfigManager，无硬编码密钥",
+        "GET /api/health 返回 200 且 code=200",
+        "CORS 允许 localhost/127.0.0.1 的 5199 与 5175"
+      ],
+      "technicalChecks": [
+        "$PY -m ruff check backend/src backend/tests",
+        "$PY -m mypy backend/src backend/tests",
+        "$PY -m pytest backend/tests -q",
+        "cd backend && PYTHONPATH=.. $PY -m uvicorn src.main:app --host 127.0.0.1 --port 8099 可短时启动并 curl /api/health"
+      ],
+      "frontendIntegration": {
+        "required": false,
+        "pages": [],
+        "services": [],
+        "realApiEndpoints": [],
+        "mockExitCriteria": []
+      },
+      "externalServices": [],
+      "dependencies": [
+        "T-006"
+      ],
+      "priority": 7,
+      "rules_files": [
+        "dev-standards/backend-dev.md",
+        "dev-standards/backend-layers.md"
+      ],
+      "status": "passed",
+      "developer_id": "developer-local",
+      "tester_id": "tester-local",
+      "retry_count": 0,
+      "blocked": false,
+      "notes": "PASS 2026-09-07; health+CORS+ConfigManager verified",
+      "user_gate": false
+    },
+    {
+      "id": "T-008",
+      "title": "后端基础设施：PostgreSQL 模型与初始化",
+      "type": "backend",
+      "description": "基于 pycore db 模板建立 session/models；覆盖 User/Tag/Entry/Highlight/ImportJob/QuadrantNote 等 PRD 实体；提供 scripts/init_db.py；注册时种子默认思考/情绪标签逻辑可先落在后续任务，本任务至少表结构可用。",
+      "source_feature": "B00 数据层",
+      "acceptanceCriteria": [
+        "backend/src/db/models.py 与 session.py 基于 pycore 模板扩展",
+        "cd backend && PYTHONPATH=.. $PY scripts/init_db.py 可对 DATABASE_URL 建表成功",
+        "关键业务表存在（users、tags、entries、highlights 等）"
+      ],
+      "technicalChecks": [
+        "$PY -m ruff check backend/src backend/tests",
+        "$PY -m mypy backend/src backend/tests",
+        "$PY -m pytest backend/tests -q",
+        "init_db 真实连 Postgres 建表（非仅测试夹具）"
+      ],
+      "frontendIntegration": {
+        "required": false,
+        "pages": [],
+        "services": [],
+        "realApiEndpoints": [],
+        "mockExitCriteria": []
+      },
+      "externalServices": [
+        "PostgreSQL"
+      ],
+      "dependencies": [
+        "T-007"
+      ],
+      "priority": 8,
+      "rules_files": [
+        "dev-standards/backend-dev.md",
+        "dev-standards/backend-layers.md"
+      ],
+      "status": "passed",
+      "developer_id": "developer-local",
+      "tester_id": "tester-local",
+      "retry_count": 0,
+      "blocked": false,
+      "notes": "PASS 2026-09-07; Postgres init_db + core tables verified",
+      "user_gate": false
+    },
+    {
+      "id": "T-009",
+      "title": "后端基础设施：路由级鉴权依赖",
+      "type": "backend",
+      "description": "扩展 backend/src/api/deps.py：get_current_user；受保护路由 Depends；无/无效 token 返回 401 统一格式；JWT 配置从 env 读取。",
+      "source_feature": "B00 鉴权骨架",
+      "acceptanceCriteria": [
+        "get_current_user 作为路由级依赖实现",
+        "无凭证/无效凭证访问受保护探针路由返回 401 统一错误格式",
+        "不要求全局 AuthMiddleware（除非后续明确需要）"
+      ],
+      "technicalChecks": [
+        "$PY -m ruff check backend/src backend/tests",
+        "$PY -m mypy backend/src backend/tests",
+        "$PY -m pytest backend/tests -q"
+      ],
+      "frontendIntegration": {
+        "required": false,
+        "pages": [],
+        "services": [],
+        "realApiEndpoints": [],
+        "mockExitCriteria": []
+      },
+      "externalServices": [],
+      "dependencies": [
+        "T-008"
+      ],
+      "priority": 9,
+      "rules_files": [
+        "dev-standards/backend-dev.md",
+        "dev-standards/backend-layers.md"
+      ],
+      "status": "passed",
+      "developer_id": "developer-local",
+      "tester_id": "tester-local",
+      "retry_count": 0,
+      "blocked": false,
+      "notes": "PASS 2026-09-07; get_current_user + /api/auth/probe 40101 verified",
+      "user_gate": false
+    },
+    {
+      "id": "T-010",
+      "title": "闭环：注册验证登录改密",
+      "type": "integration",
+      "description": "实现 /api/auth/*；开发期 MAIL_DEV_PRINT 打印验证链接；前端 auth 在 VITE_USE_MOCK=false 走真实 API；注册种子默认标签；登录未验证返回 40301。",
+      "source_feature": "F01 F02 B01",
+      "acceptanceCriteria": [
+        "用户在注册页提交后，可按终端打印的验证链接完成验证，再登录进入日记页",
+        "用户使用错误密码登录时看到明确错误提示，不进入主站",
+        "用户在我的页修改密码后，可用新密码登录",
+        "刷新浏览器后仍保持登录（token 持久化）"
+      ],
+      "technicalChecks": [
+        "$PY -m pytest backend/tests -q",
+        "VITE_USE_MOCK=false 时登录/注册请求命中真实后端而非 mocks",
+        "vite proxy /api 可用",
+        "页面无该功能 [Mock] 残留文案"
+      ],
+      "frontendIntegration": {
+        "required": true,
+        "pages": [
+          "Login",
+          "Register",
+          "VerifyEmail",
+          "Settings"
+        ],
+        "services": [
+          "authService"
+        ],
+        "realApiEndpoints": [
+          "POST /api/auth/register",
+          "POST /api/auth/login",
+          "POST /api/auth/login/send-code",
+          "POST /api/auth/logout",
+          "GET /api/auth/me",
+          "POST /api/auth/verify-email",
+          "POST /api/auth/resend-verification",
+          "POST /api/auth/change-password"
+        ],
+        "mockExitCriteria": [
+          "auth 相关 service 在 VITE_USE_MOCK=false 时不走 mocks/auth"
+        ]
+      },
+      "externalServices": [
+        "Mail",
+        "PostgreSQL"
+      ],
+      "dependencies": [
+        "T-009"
+      ],
+      "priority": 10,
+      "rules_files": [
+        "dev-standards/frontend.md",
+        "dev-standards/backend-dev.md",
+        "dev-standards/backend-layers.md"
+      ],
+      "status": "passed",
+      "developer_id": "developer-local",
+      "tester_id": "tester-local",
+      "retry_count": 0,
+      "blocked": false,
+      "notes": "PASS 2026-09-08; user_gate confirmed (auth闭环+日记页 UX 微调)",
+      "user_gate": true
+    },
+    {
+      "id": "T-011",
+      "title": "闭环：标签词库",
+      "type": "integration",
+      "description": "实现 /api/tags CRUD；我的页词库切真实；注册种子默认思考/情绪标签可列出。",
+      "source_feature": "F10 B02",
+      "acceptanceCriteria": [
+        "用户在我的页看到默认思考类与情绪类标签列表",
+        "用户可新增自定义标签并在列表中立即看到",
+        "用户可删除自定义标签后列表更新"
+      ],
+      "technicalChecks": [
+        "$PY -m pytest backend/tests -q",
+        "VITE_USE_MOCK=false 时 tags 请求命中真实后端",
+        "无该功能 Mock 残留"
+      ],
+      "frontendIntegration": {
+        "required": true,
+        "pages": [
+          "Settings"
+        ],
+        "services": [
+          "tagService"
+        ],
+        "realApiEndpoints": [
+          "GET /api/tags",
+          "POST /api/tags",
+          "PATCH /api/tags/{tag_id}",
+          "DELETE /api/tags/{tag_id}"
+        ],
+        "mockExitCriteria": [
+          "tagService 切真实"
+        ]
+      },
+      "externalServices": [
+        "PostgreSQL"
+      ],
+      "dependencies": [
+        "T-010"
+      ],
+      "priority": 11,
+      "rules_files": [
+        "dev-standards/frontend.md",
+        "dev-standards/backend-dev.md",
+        "dev-standards/backend-layers.md"
+      ],
+      "status": "passed",
+      "developer_id": null,
+      "tester_id": null,
+      "retry_count": 0,
+      "blocked": false,
+      "notes": "PASS 2026-09-08; user_gate confirmed (右键删除+关联确认+icon配色+Settings UI)",
+      "user_gate": true
+    },
+    {
+      "id": "T-012",
+      "title": "闭环：日记 CRUD 与列表筛选",
+      "type": "integration",
+      "description": "实现 entries 列表/详情/创建/更新/删除；前端日记工作台切真实；写日记、保存、选中切换可用。",
+      "source_feature": "F03 B03",
+      "acceptanceCriteria": [
+        "用户点击写日记并保存后，中栏列表出现新条目",
+        "用户点击列表条目，右栏展示该篇真实正文与标签",
+        "用户修改标题/正文保存后，列表摘要与最近更新时间更新",
+        "用户删除日记并确认后，该条目从列表消失"
+      ],
+      "technicalChecks": [
+        "$PY -m pytest backend/tests -q",
+        "VITE_USE_MOCK=false 时 entries 命中真实后端",
+        "无该功能 Mock 残留"
+      ],
+      "frontendIntegration": {
+        "required": true,
+        "pages": [
+          "DiaryWorkspace"
+        ],
+        "services": [
+          "entryService"
+        ],
+        "realApiEndpoints": [
+          "GET /api/entries",
+          "GET /api/entries/{entry_id}",
+          "POST /api/entries",
+          "PATCH /api/entries/{entry_id}",
+          "DELETE /api/entries/{entry_id}"
+        ],
+        "mockExitCriteria": [
+          "entryService 切真实"
+        ]
+      },
+      "externalServices": [
+        "PostgreSQL"
+      ],
+      "dependencies": [
+        "T-011"
+      ],
+      "priority": 12,
+      "rules_files": [
+        "dev-standards/frontend.md",
+        "dev-standards/backend-dev.md",
+        "dev-standards/backend-layers.md"
+      ],
+      "status": "passed",
+      "developer_id": null,
+      "tester_id": null,
+      "retry_count": 0,
+      "blocked": false,
+      "notes": "PASS 2026-09-08; user_gate confirmed (CRUD + list ellipsis + date + energy mock bridge)",
+      "user_gate": true
+    },
+    {
+      "id": "T-013",
+      "title": "闭环：划线能量与话题批注",
+      "type": "integration",
+      "description": "实现 highlights CRUD；前端 M01/M02 与高亮渲染切真实；无能量划线不展示底部能量卡。",
+      "source_feature": "F04 F05 B04",
+      "acceptanceCriteria": [
+        "用户选中一段正文标记能量并保存后，该段以能量样式高亮，底部能量卡出现汇总",
+        "用户选中一段正文标记话题/情绪后，高亮样式与能量可区分，再次点击可编辑标签",
+        "用户删除全部能量标记后，底部能量卡不再展示"
+      ],
+      "technicalChecks": [
+        "$PY -m pytest backend/tests -q",
+        "VITE_USE_MOCK=false 时 highlights 命中真实后端",
+        "无该功能 Mock 残留"
+      ],
+      "frontendIntegration": {
+        "required": true,
+        "pages": [
+          "DiaryWorkspace"
+        ],
+        "services": [
+          "highlightService"
+        ],
+        "realApiEndpoints": [
+          "POST /api/entries/{entry_id}/highlights",
+          "PATCH /api/highlights/{highlight_id}",
+          "DELETE /api/highlights/{highlight_id}"
+        ],
+        "mockExitCriteria": [
+          "highlightService 切真实"
+        ]
+      },
+      "externalServices": [
+        "PostgreSQL"
+      ],
+      "dependencies": [
+        "T-012"
+      ],
+      "priority": 13,
+      "rules_files": [
+        "dev-standards/frontend.md",
+        "dev-standards/backend-dev.md",
+        "dev-standards/backend-layers.md"
+      ],
+      "status": "passed",
+      "developer_id": null,
+      "tester_id": null,
+      "retry_count": 0,
+      "blocked": false,
+      "notes": "PASS 2026-09-08; user_gate confirmed (highlights energy/topic persist)",
+      "user_gate": true
+    },
+    {
+      "id": "T-014",
+      "title": "闭环：AI 标签建议（允许 Mock LLM）",
+      "type": "integration",
+      "description": "实现 ai-tag-suggestions 生成/采纳/忽略；无 LLM_API_KEY 时 source=mock 仍 200；有 Key 可走 DeepSeek。前端 M03 切真实。",
+      "source_feature": "F06 B05",
+      "acceptanceCriteria": [
+        "用户保存日记后，右栏出现 AI 建议条（Mock 或真实均可），可采纳后篇级标签增加建议项",
+        "用户点击忽略后，建议条按已忽略处理不再干扰编辑",
+        "页面不出现 AI 自动改写能量或人生建议结论"
+      ],
+      "technicalChecks": [
+        "$PY -m pytest backend/tests -q",
+        "无 Key 时返回 source=mock 且报告标注降级验收，不得宣称 DeepSeek 真调通过",
+        "VITE_USE_MOCK=false 时建议接口命中真实后端",
+        "httpx 调用 LLM 必须 trust_env=False"
+      ],
+      "frontendIntegration": {
+        "required": true,
+        "pages": [
+          "DiaryWorkspace"
+        ],
+        "services": [
+          "aiSuggestService"
+        ],
+        "realApiEndpoints": [
+          "POST /api/entries/{entry_id}/ai-tag-suggestions",
+          "POST /api/entries/{entry_id}/ai-tag-suggestions/{suggestion_id}/accept",
+          "POST /api/entries/{entry_id}/ai-tag-suggestions/{suggestion_id}/dismiss"
+        ],
+        "mockExitCriteria": [
+          "aiSuggestService 切真实后端（LLM 层可 mock）"
+        ]
+      },
+      "externalServices": [
+        "DeepSeek LLM"
+      ],
+      "dependencies": [
+        "T-013"
+      ],
+      "priority": 14,
+      "rules_files": [
+        "dev-standards/frontend.md",
+        "dev-standards/backend-dev.md",
+        "dev-standards/backend-layers.md"
+      ],
+      "status": "passed",
+      "developer_id": null,
+      "tester_id": null,
+      "retry_count": 0,
+      "blocked": false,
+      "notes": "PASS 2026-09-09; user_gate confirmed (AI suggest + UX: async save, selectable adopt, entry tag bar)",
+      "user_gate": true
+    },
+    {
+      "id": "T-015",
+      "title": "闭环：自我认知洞察",
+      "type": "integration",
+      "description": "实现 GET /api/insights/self-awareness；前端自我认知页切真实并支持下钻定位。",
+      "source_feature": "F07 B06",
+      "acceptanceCriteria": [
+        "用户在自我认知页切换话题筛选后，时间线展示该话题相关真实摘录",
+        "用户点击摘录进入日记页，能看到对应日记（有 highlight 则尽量定位）"
+      ],
+      "technicalChecks": [
+        "$PY -m pytest backend/tests -q",
+        "VITE_USE_MOCK=false 命中真实 insights 接口",
+        "无该功能 Mock 残留"
+      ],
+      "frontendIntegration": {
+        "required": true,
+        "pages": [
+          "SelfAwareness",
+          "DiaryWorkspace"
+        ],
+        "services": [
+          "insightService"
+        ],
+        "realApiEndpoints": [
+          "GET /api/insights/self-awareness"
+        ],
+        "mockExitCriteria": [
+          "self-awareness 分支切真实"
+        ]
+      },
+      "externalServices": [
+        "PostgreSQL"
+      ],
+      "dependencies": [
+        "T-014"
+      ],
+      "priority": 15,
+      "rules_files": [
+        "dev-standards/frontend.md",
+        "dev-standards/backend-dev.md",
+        "dev-standards/backend-layers.md"
+      ],
+      "status": "passed",
+      "developer_id": null,
+      "tester_id": null,
+      "retry_count": 0,
+      "blocked": false,
+      "notes": "PASS 2026-09-09; user_gate confirmed (self-awareness + uncovered entry-tag fallback)",
+      "user_gate": true
+    },
+    {
+      "id": "T-016",
+      "title": "闭环：美好时光与象限观察",
+      "type": "integration",
+      "description": "实现 good-times 与 quadrant-notes；前端美好时光切真实。",
+      "source_feature": "F08 B07",
+      "acceptanceCriteria": [
+        "用户在美好时光页看到基于真实能量划线的四象限分布",
+        "用户点击象限后下方切片列表更新为该区真实数据",
+        "用户保存一条象限观察后刷新仍在"
+      ],
+      "technicalChecks": [
+        "$PY -m pytest backend/tests -q",
+        "VITE_USE_MOCK=false 命中真实 good-times / quadrant-notes",
+        "无该功能 Mock 残留"
+      ],
+      "frontendIntegration": {
+        "required": true,
+        "pages": [
+          "GoodTimes",
+          "DiaryWorkspace"
+        ],
+        "services": [
+          "insightService"
+        ],
+        "realApiEndpoints": [
+          "GET /api/insights/good-times",
+          "GET /api/insights/quadrant-notes",
+          "POST /api/insights/quadrant-notes",
+          "PATCH /api/insights/quadrant-notes/{note_id}",
+          "DELETE /api/insights/quadrant-notes/{note_id}"
+        ],
+        "mockExitCriteria": [
+          "good-times 分支切真实"
+        ]
+      },
+      "externalServices": [
+        "PostgreSQL"
+      ],
+      "dependencies": [
+        "T-015"
+      ],
+      "priority": 16,
+      "rules_files": [
+        "dev-standards/frontend.md",
+        "dev-standards/backend-dev.md",
+        "dev-standards/backend-layers.md"
+      ],
+      "status": "passed",
+      "developer_id": null,
+      "tester_id": null,
+      "retry_count": 0,
+      "blocked": false,
+      "notes": "PASS 2026-09-09; user_gate confirmed (good-times + quadrant-notes)",
+      "user_gate": true
+    },
+    {
+      "id": "T-017",
+      "title": "闭环：飞书导出文件导入",
+      "type": "integration",
+      "description": "实现 imports 上传/查询/预览修补/提交；本地 UPLOAD_DIR；前端导入向导切真实。",
+      "source_feature": "F09 B08",
+      "acceptanceCriteria": [
+        "用户上传一份 md 或 docx 后，能看到解析预览条数与样例",
+        "用户确认导入后，日记中栏出现导入的条目",
+        "解析失败时页面展示可读错误原因"
+      ],
+      "technicalChecks": [
+        "$PY -m pytest backend/tests -q",
+        "VITE_USE_MOCK=false 命中真实 imports",
+        "文件写入 UPLOAD_DIR",
+        "无该功能 Mock 残留"
+      ],
+      "frontendIntegration": {
+        "required": true,
+        "pages": [
+          "Import",
+          "DiaryWorkspace"
+        ],
+        "services": [
+          "importService"
+        ],
+        "realApiEndpoints": [
+          "POST /api/imports",
+          "GET /api/imports/{import_id}",
+          "PATCH /api/imports/{import_id}/preview",
+          "POST /api/imports/{import_id}/commit"
+        ],
+        "mockExitCriteria": [
+          "importService 切真实"
+        ]
+      },
+      "externalServices": [
+        "Local Upload",
+        "PostgreSQL"
+      ],
+      "dependencies": [
+        "T-016"
+      ],
+      "priority": 17,
+      "rules_files": [
+        "dev-standards/frontend.md",
+        "dev-standards/backend-dev.md",
+        "dev-standards/backend-layers.md"
+      ],
+      "status": "passed",
+      "developer_id": null,
+      "tester_id": null,
+      "retry_count": 0,
+      "blocked": false,
+      "notes": "PASS 2026-09-09; user_gate confirmed (imports upload/preview/commit)",
+      "user_gate": true
+    },
+    {
+      "id": "T-018",
+      "title": "E2E 回归与 startup 文档",
+      "type": "integration",
+      "description": "全链路回归：注册验证→写日记划线→AI 建议→自我认知/美好时光下钻→导入；输出 docs/startup.md；确认无情绪图谱入口。",
+      "source_feature": "Plan 阶段4",
+      "acceptanceCriteria": [
+        "用户按 startup 文档可完成本地启动并走通主流程",
+        "全站导航仍无情绪图谱",
+        "主流程无阻塞性错误与功能级 Mock 残留提示"
+      ],
+      "technicalChecks": [
+        "前后端在约定端口可启动",
+        "关键 curl/页面路径回归通过",
+        "docs/startup.md 已输出"
+      ],
+      "frontendIntegration": {
+        "required": true,
+        "pages": [
+          "全部 MVP 页"
+        ],
+        "services": [],
+        "realApiEndpoints": [],
+        "mockExitCriteria": [
+          "默认验收路径不以 Mock 为主"
+        ]
+      },
+      "externalServices": [
+        "DeepSeek LLM",
+        "Mail",
+        "Local Upload",
+        "PostgreSQL"
+      ],
+      "dependencies": [
+        "T-017"
+      ],
+      "priority": 18,
+      "rules_files": [
+        "dev-standards/frontend.md",
+        "dev-standards/backend-dev.md"
+      ],
+      "status": "passed",
+      "developer_id": null,
+      "tester_id": null,
+      "retry_count": 0,
+      "blocked": false,
+      "notes": "PASS 2026-09-11; final user_gate confirmed (E2E + startup + UI clay polish)",
+      "user_gate": true
+    }
+  ]
+}

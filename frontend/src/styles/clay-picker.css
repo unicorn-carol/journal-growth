@@ -1,0 +1,186 @@
+/**
+ * Clay styles for Ant Design Calendar + DatePicker
+ * (filter popover calendar & diary header date picker)
+ */
+
+/* —— Trigger: diary top date —— */
+.editor-date-row {
+  display: inline-flex;
+  margin-bottom: 8px;
+}
+
+.editor-date-picker.ant-picker {
+  width: auto !important;
+  min-width: 0;
+  padding: 6px 14px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: linear-gradient(180deg, #ffffff 0%, #fff4e8 100%) !important;
+  box-shadow: var(--clay-out-sm) !important;
+  transition:
+    transform var(--duration-clay) var(--ease-bounce),
+    box-shadow var(--duration-clay) var(--ease-bounce);
+}
+
+.editor-date-picker.ant-picker:hover,
+.editor-date-picker.ant-picker-focused {
+  transform: translateY(-1px);
+  box-shadow: var(--clay-hover) !important;
+  background: linear-gradient(180deg, #f4f1ff 0%, var(--topic-soft) 100%) !important;
+}
+
+.editor-date-picker.ant-picker .ant-picker-input > input {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: var(--topic-ink) !important;
+  cursor: pointer;
+}
+
+.editor-date-picker.ant-picker .ant-picker-suffix {
+  color: var(--topic);
+  opacity: 0.85;
+}
+
+/* —— DatePicker dropdown panel —— */
+.clay-picker-dropdown.ant-picker-dropdown {
+  padding: 0;
+}
+
+.clay-picker-dropdown .ant-picker-panel-container,
+.clay-picker-dropdown .ant-picker-panel {
+  border: 0 !important;
+  border-radius: var(--radius-lg) !important;
+  background: linear-gradient(165deg, #ffffff 0%, #fff6ea 100%) !important;
+  box-shadow: var(--clay-out-lg) !important;
+  overflow: hidden;
+}
+
+.clay-picker-dropdown .ant-picker-header {
+  padding: 12px 14px 8px;
+  border: 0 !important;
+}
+
+.clay-picker-dropdown .ant-picker-header button,
+.clay-picker-dropdown .ant-picker-header-view button {
+  border-radius: 12px !important;
+  font-weight: 800 !important;
+  color: var(--topic-ink) !important;
+  transition:
+    transform var(--duration-clay) var(--ease-bounce),
+    box-shadow var(--duration-clay) var(--ease-bounce);
+}
+
+.clay-picker-dropdown .ant-picker-header button:hover,
+.clay-picker-dropdown .ant-picker-header-view button:hover {
+  background: var(--topic-soft) !important;
+}
+
+.clay-picker-dropdown .ant-picker-content th {
+  color: var(--text-secondary) !important;
+  font-weight: 700 !important;
+  font-size: 12px;
+}
+
+.clay-picker-dropdown .ant-picker-cell {
+  padding: 2px 0;
+}
+
+.clay-picker-dropdown .ant-picker-cell .ant-picker-cell-inner {
+  min-width: 32px !important;
+  height: 32px !important;
+  line-height: 32px !important;
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  transition:
+    transform var(--duration-clay) var(--ease-bounce),
+    box-shadow var(--duration-clay) var(--ease-bounce),
+    background var(--duration-clay) var(--ease-bounce);
+}
+
+.clay-picker-dropdown .ant-picker-cell:hover .ant-picker-cell-inner {
+  background: var(--topic-soft) !important;
+  box-shadow: var(--clay-out-sm);
+}
+
+.clay-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner,
+.clay-picker-dropdown .ant-picker-cell-selected .ant-picker-cell-inner {
+  background: linear-gradient(180deg, #ddd6fe 0%, var(--topic-block) 100%) !important;
+  color: var(--topic-ink) !important;
+  box-shadow: var(--clay-press) !important;
+}
+
+.clay-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
+  border: 0 !important;
+  border-radius: 12px !important;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--calm) 55%, transparent);
+}
+
+.clay-picker-dropdown .ant-picker-cell-inner.clay-day-has-entry {
+  position: relative;
+  background: linear-gradient(180deg, #f4f1ff 0%, var(--topic-soft) 100%);
+  box-shadow: var(--clay-out-sm);
+  color: var(--topic-ink);
+}
+
+.clay-picker-dropdown .ant-picker-cell-inner.clay-day-has-entry::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #9a8ff5 0%, var(--topic) 100%);
+  box-shadow: 0 1px 2px rgba(58, 52, 46, 0.15);
+}
+
+.clay-picker-dropdown .ant-picker-cell-selected .ant-picker-cell-inner.clay-day-has-entry {
+  background: linear-gradient(180deg, #ddd6fe 0%, var(--topic-block) 100%);
+  box-shadow: var(--clay-press);
+}
+
+.clay-picker-dropdown .ant-picker-cell-selected .ant-picker-cell-inner.clay-day-has-entry::after {
+  bottom: 3px;
+}
+
+.clay-picker-dropdown .ant-picker-footer,
+.clay-picker-dropdown .ant-picker-now {
+  border: 0 !important;
+}
+
+/* Mid-column filter date uses same clay trigger as diary header */
+.filter-date-picker.editor-date-picker.ant-picker {
+  max-width: 132px;
+}
+
+.filter-date-picker.editor-date-picker.ant-picker .ant-picker-input > input::placeholder {
+  color: var(--text-secondary);
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+/* —— Tag filter popover (still used) —— */
+.clay-popover .ant-popover-inner {
+  border: 0 !important;
+  border-radius: var(--radius-lg) !important;
+  padding: 12px !important;
+  background: linear-gradient(165deg, #ffffff 0%, #fff6ea 100%) !important;
+  box-shadow: var(--clay-out-lg) !important;
+}
+
+.clay-popover .ant-popover-arrow::before,
+.clay-popover .ant-popover-arrow::after {
+  background: #fff8ef !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editor-date-picker.ant-picker,
+  .clay-picker-dropdown .ant-picker-cell .ant-picker-cell-inner {
+    transition: none;
+  }
+
+  .editor-date-picker.ant-picker:hover {
+    transform: none;
+  }
+}

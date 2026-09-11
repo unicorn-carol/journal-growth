@@ -1,0 +1,121 @@
+/* Clay icons — shared */
+.clay-icon {
+  display: block;
+  flex-shrink: 0;
+  overflow: visible;
+  transition:
+    transform var(--duration-clay) var(--ease-bounce),
+    filter var(--duration-clay) var(--ease-bounce);
+}
+
+.clay-energy-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  vertical-align: middle;
+}
+
+.clay-icon-half-wrap {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: middle;
+  line-height: 0;
+}
+
+.clay-icon-half-wrap .clay-icon {
+  display: block;
+}
+
+/* Rating slots in energy modal */
+.rate-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rate-label-icon {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fff 0%, #fff4e8 100%);
+  box-shadow: var(--clay-out-sm);
+}
+
+.clay-rate-slot {
+  width: 34px;
+  height: 34px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #fffdf9 0%, #fff4e8 100%);
+  box-shadow: var(--clay-out-sm);
+  transition:
+    transform var(--duration-clay) var(--ease-bounce),
+    box-shadow var(--duration-clay) var(--ease-bounce);
+}
+
+.clay-rate-slot:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--clay-hover);
+}
+
+.clay-rate-slot:has(.star-half:active) {
+  transform: scaleX(1.06) scaleY(0.9);
+  box-shadow: var(--clay-press);
+}
+
+.clay-rate-face {
+  width: 28px;
+  height: 28px;
+}
+
+.clay-rate-face .star-empty {
+  opacity: 1;
+}
+
+.clay-rate-face .star-fill {
+  color: inherit;
+}
+
+.star-slot.focus .clay-rate-face .star-fill,
+.star-slot.drain .clay-rate-face .star-fill {
+  color: inherit;
+}
+
+/* Mid-column filter icon buttons */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn .clay-icon {
+  pointer-events: none;
+}
+
+.icon-btn.is-active .clay-icon--calendar,
+.icon-btn.is-active .clay-icon--hash {
+  filter: saturate(1.15);
+}
+
+/* Selection menu with icons */
+.sel-menu-btn {
+  gap: 8px;
+}
+
+.sel-menu-btn .clay-icon {
+  flex-shrink: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clay-icon,
+  .clay-rate-slot {
+    transition: none;
+  }
+
+  .clay-rate-slot:hover,
+  .clay-rate-slot:has(.star-half:active) {
+    transform: none;
+  }
+}

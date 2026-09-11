@@ -1,0 +1,135 @@
+/**
+ * Claymorphism utilities — theme-adapted (cream + indigo/mint/lemon/coral).
+ * No pink theme. Soft candy lanes for energy / topic / emotion.
+ */
+
+.clay-surface {
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(160deg, #ffffff 0%, #fff8ee 100%);
+  box-shadow: var(--clay-out);
+}
+
+.clay-surface-lg {
+  border: 0;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(165deg, #ffffff 0%, #fff6ea 100%);
+  box-shadow: var(--clay-out-lg);
+}
+
+.clay-inset {
+  border: 0;
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, #f3ebe0 0%, #fffdf9 100%);
+  box-shadow: var(--clay-inset);
+}
+
+.clay-pressable {
+  border: 0;
+  cursor: pointer;
+  transition:
+    transform var(--duration-clay) var(--ease-bounce),
+    box-shadow var(--duration-clay) var(--ease-bounce),
+    background-color var(--duration-clay) var(--ease-bounce);
+}
+
+.clay-pressable:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--clay-hover);
+}
+
+.clay-pressable:active {
+  transform: scaleX(1.04) scaleY(0.92);
+  box-shadow: var(--clay-press);
+}
+
+.clay-pressable:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--topic) 35%, transparent);
+  outline-offset: 2px;
+}
+
+.clay-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  font-size: 13px;
+  color: #fff;
+  background: linear-gradient(180deg, #9a8ff5 0%, var(--topic) 100%);
+  box-shadow: var(--clay-out-sm);
+  cursor: pointer;
+  transition:
+    transform var(--duration-clay) var(--ease-bounce),
+    box-shadow var(--duration-clay) var(--ease-bounce);
+}
+
+.clay-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--clay-hover);
+}
+
+.clay-btn:active {
+  transform: scaleX(1.05) scaleY(0.9);
+  box-shadow: var(--clay-press);
+}
+
+.clay-btn--soft {
+  color: var(--topic-ink);
+  background: linear-gradient(180deg, #f4f1ff 0%, var(--topic-block) 100%);
+}
+
+.clay-btn--energy {
+  color: #a33b3b;
+  background: linear-gradient(180deg, #ffe8e8 0%, var(--focus-block) 100%);
+}
+
+.clay-btn--mint {
+  color: #2f7a5c;
+  background: linear-gradient(180deg, #ecfaf3 0%, var(--calm-soft) 100%);
+}
+
+.clay-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: var(--clay-out-sm);
+  transition:
+    transform var(--duration-clay) var(--ease-bounce),
+    box-shadow var(--duration-clay) var(--ease-bounce);
+}
+
+.clay-chip:hover {
+  transform: translateY(-1px);
+}
+
+.clay-chip:active {
+  transform: scaleX(1.05) scaleY(0.9);
+  box-shadow: var(--clay-press);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clay-pressable,
+  .clay-btn,
+  .clay-chip {
+    transition: none;
+  }
+
+  .clay-pressable:hover,
+  .clay-btn:hover,
+  .clay-chip:hover,
+  .clay-pressable:active,
+  .clay-btn:active,
+  .clay-chip:active {
+    transform: none;
+  }
+}

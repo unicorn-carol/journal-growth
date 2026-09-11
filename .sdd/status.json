@@ -1,0 +1,9 @@
+{
+  "stage": "delivered",
+  "mode": "new",
+  "design_ready": true,
+  "development_ready": true,
+  "current_task": "T-018",
+  "blocked": false,
+  "notes": "MVP delivered 2026-09-11; T-018 final user_gate confirmed."
+}

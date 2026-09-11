@@ -1,12 +1,39 @@
 .env
 .env.*
 !.env.example
+!.env.*.example
+
+# Python
 __pycache__/
 *.py[cod]
 .pytest_cache/
 .mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+*.egg-info/
+.coverage
+htmlcov/
+
+# Node / frontend
 node_modules/
 dist/
+dist-ssr/
 build/
-.DS_Store
+*.local
+
+# Runtime / local data
 logs/
+backend/data/
+*.sqlite
+*.db
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# SDD scratch (keep tasks/status/experience; skip local tmp assets)
+.sdd/tmp/
+.sdd/bug_fix/
