@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { message } from 'antd'
+import { Button, message } from 'antd'
 import { fetchSelfAwareness } from '@/services/insightService'
 import { listTags } from '@/services/tagService'
 import { TagPill } from '@/components/TagPill'
@@ -108,7 +108,12 @@ export function SelfAwarenessPage() {
       {loading ? (
         <div className="self-empty">加载中…</div>
       ) : items.length === 0 ? (
-        <div className="self-empty">这个话题下还没有想法摘录</div>
+        <div className="self-empty">
+          <p>这个话题下还没有想法摘录。</p>
+          <Button type="primary" onClick={() => navigate('/diary')}>
+            去日记标注
+          </Button>
+        </div>
       ) : (
         items.map((item) => (
           <article

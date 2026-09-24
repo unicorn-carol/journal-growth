@@ -14,22 +14,22 @@
   grid-template-columns: var(--sidebar-width) 1fr;
   gap: 14px;
   padding: 14px;
-  background: linear-gradient(160deg, #fffdf9 0%, #f7f0e6 100%);
-  border: 0;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-xl);
   box-shadow: var(--clay-out-lg);
   overflow: hidden;
 }
 
 .sidebar {
-  background: linear-gradient(180deg, #f6efe4 0%, #efe6d8 100%);
-  border: 0;
+  background: var(--bg-nav);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: 14px 12px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  box-shadow: var(--clay-inset);
+  box-shadow: none;
 }
 
 .side-head {
@@ -39,7 +39,8 @@
   padding: 10px 12px;
   border: 0;
   border-radius: var(--radius-md);
-  background: linear-gradient(160deg, #ffffff 0%, #fff4e8 100%);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
   box-shadow: var(--clay-out-sm);
   cursor: pointer;
   text-align: left;
@@ -242,6 +243,17 @@
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.code-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.code-row .ant-input {
+  flex: 1;
+  min-width: 0;
 }
 
 .auth-hint {

@@ -1,43 +1,35 @@
 import type { TagDTO } from '@/types/insight'
 import type { TagKind } from '@/types/entry'
 import { PRESET_EMOTION, PRESET_THINKING } from '@/mocks/entries'
-import { thinkingColorAt } from '@/utils/tagColors'
+import { EMOTION_COLORS, colorForTag } from '@/utils/tagColors'
 
 function delay(ms = 100) {
   return new Promise((r) => setTimeout(r, ms))
 }
 
-const EMOTION_META: Record<string, { color: string; shape: string | null }> = {
-  平静: { color: '#7EC8A3', shape: 'calm_wave' },
-  喜悦: { color: '#F5D56B', shape: 'joy_blob' },
-  期待: { color: '#F5D56B', shape: null },
-  感动: { color: '#E87A7A', shape: null },
-  安心: { color: '#7EC8A3', shape: 'calm_wave' },
-  焦虑: { color: '#B8A4E8', shape: 'anxious_fuzz' },
-  疲惫: { color: '#6B9BD1', shape: 'low_mud' },
-  失落: { color: '#6B9BD1', shape: null },
-  愤怒: { color: '#F0A06A', shape: null },
-  孤独: { color: '#A39A8E', shape: null },
-  迷茫: { color: '#B8A4E8', shape: 'anxious_fuzz' },
-  紧张: { color: '#B8A4E8', shape: 'anxious_fuzz' },
-  释然: { color: '#7EC8A3', shape: null },
-  委屈: { color: '#E87A7A', shape: null },
+const EMOTION_SHAPE: Record<string, string | null> = {
+  平静: 'calm_wave',
+  喜悦: 'joy_blob',
+  安心: 'calm_wave',
+  焦虑: 'anxious_fuzz',
+  疲惫: 'low_mud',
+  迷茫: 'anxious_fuzz',
+  紧张: 'anxious_fuzz',
 }
 
 const tagStore: TagDTO[] = [
   ...PRESET_THINKING.map((t, i) => ({
     ...t,
-    color: thinkingColorAt(i),
+    color: colorForTag(t.name, null, 'thinking'),
     shape: null,
     sort_order: (i + 1) * 10,
     is_system_default: true,
   })),
   ...PRESET_EMOTION.map((t, i) => {
-    const meta = EMOTION_META[t.name] ?? { color: '#A855F7', shape: null }
     return {
       ...t,
-      color: meta.color,
-      shape: meta.shape,
+      color: EMOTION_COLORS[t.name] ?? colorForTag(t.name, null, 'emotion'),
+      shape: EMOTION_SHAPE[t.name] ?? null,
       sort_order: i + 1,
       is_system_default: true,
     }
@@ -72,12 +64,8 @@ export async function mockCreateTag(input: {
     id: crypto.randomUUID(),
     kind: input.kind,
     name,
-    color:
-      input.color ??
-      (input.kind === 'thinking'
-        ? thinkingColorAt(tagStore.filter((x) => x.kind === 'thinking').length)
-        : (EMOTION_META[name]?.color ?? '#A855F7')),
-    shape: input.shape ?? (input.kind === 'emotion' ? (EMOTION_META[name]?.shape ?? null) : null),
+    color: input.color ?? colorForTag(name, null, input.kind),
+    shape: input.shape ?? (input.kind === 'emotion' ? (EMOTION_SHAPE[name] ?? null) : null),
     sort_order: 1000 + tagStore.length,
     is_system_default: false,
   }

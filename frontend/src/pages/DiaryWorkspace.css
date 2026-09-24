@@ -21,8 +21,9 @@
   min-height: 0;
   overflow: hidden;
   border-radius: var(--radius-lg);
-  background: linear-gradient(180deg, #f6efe4 0%, #efe6d8 100%);
-  box-shadow: var(--clay-inset);
+  background: var(--bg-nav);
+  border: 1px solid var(--border-subtle);
+  box-shadow: none;
 }
 
 .mid-tools {
@@ -38,10 +39,11 @@
   height: 36px;
   border-radius: 14px;
   border: 0;
-  background: linear-gradient(180deg, #fff 0%, #fff4e8 100%);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
   cursor: pointer;
-  box-shadow: var(--clay-out-sm);
+  box-shadow: none;
   transition:
     transform var(--duration-clay) var(--ease-bounce),
     box-shadow var(--duration-clay) var(--ease-bounce);
@@ -119,13 +121,13 @@
   height: 28px;
   padding: 0 12px;
   border-radius: 14px;
-  border: 0;
-  background: linear-gradient(180deg, #fff 0%, #fff4e8 100%);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-panel);
   color: var(--text-secondary);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: var(--clay-out-sm);
+  box-shadow: none;
   transition:
     transform var(--duration-clay) var(--ease-bounce),
     box-shadow var(--duration-clay) var(--ease-bounce);
@@ -190,6 +192,12 @@
   box-shadow: var(--clay-press);
 }
 
+.btn-write:focus-visible,
+.filter-clear:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--topic) 45%, transparent);
+  outline-offset: 2px;
+}
+
 .spacer {
   flex: 1;
 }
@@ -217,7 +225,8 @@
   padding: 12px;
   border: 0;
   border-radius: var(--radius-md);
-  background: linear-gradient(160deg, #ffffff 0%, #fff6ea 100%);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
   text-align: left;
   cursor: pointer;
   color: inherit;
@@ -321,6 +330,10 @@
   text-align: center;
 }
 
+.list-empty p {
+  margin: 0 0 8px;
+}
+
 .pill {
   display: inline-flex;
   align-items: center;
@@ -354,9 +367,10 @@
   min-width: 0;
   min-height: 0;
   border-radius: var(--radius-lg);
-  background: linear-gradient(180deg, #fffdf9 0%, #fff8ef 100%);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
   padding: 20px 24px 18px;
-  box-shadow: var(--clay-out);
+  box-shadow: var(--clay-out-sm);
 }
 
 .editor-head {
@@ -598,15 +612,15 @@
   height: 30px;
   padding: 0 12px;
   border-radius: 14px;
-  border: 0;
-  background: linear-gradient(180deg, #fff 0%, #fff4e8 100%);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-panel);
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  box-shadow: var(--clay-out-sm);
+  box-shadow: none;
   transition:
     transform var(--duration-clay) var(--ease-bounce),
     box-shadow var(--duration-clay) var(--ease-bounce);
@@ -642,18 +656,18 @@
   overflow: auto;
   padding: 16px 18px;
   border-radius: var(--radius-md);
-  border: 0;
-  background: linear-gradient(180deg, #f3ebe0 0%, #fffdf9 100%);
+  border: 1px solid var(--border-subtle);
+  background: #ffffff;
+  color: var(--text-primary);
   font-size: 15px;
   line-height: 1.8;
   outline: none;
-  box-shadow: var(--clay-inset);
+  box-shadow: none;
 }
 
 .rich-editor:focus {
-  box-shadow:
-    var(--clay-inset),
-    0 0 0 3px color-mix(in srgb, var(--topic) 22%, transparent);
+  border-color: var(--primary-border);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--topic) 12%, transparent);
 }
 
 .sel-menu {

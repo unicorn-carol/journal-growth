@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { message } from 'antd'
+import { Button, message } from 'antd'
 import {
   commitImport,
   createImport,
@@ -18,7 +18,7 @@ export function ImportPage() {
   const inputRef = useRef<HTMLInputElement>(null)
   const [step, setStep] = useState<Step>(1)
   const [job, setJob] = useState<ImportJob | null>(null)
-  const [busy, setBusy] = useState(false)
+  const [busy, setBusy] = useState<null | 'file' | 'simulate' | 'commit'>(null)
 
   useEffect(() => {
     if (!job || job.status !== 'parsing') return
@@ -47,7 +47,7 @@ export function ImportPage() {
   }, [job])
 
   const startWithFile = async (file: File) => {
-    setBusy(true)
+    setBusy('file')
     try {
       const created = await createImport(file)
       setJob(created)
@@ -64,12 +64,12 @@ export function ImportPage() {
     } catch (e) {
       message.error((e as Error).message || '上传失败')
     } finally {
-      setBusy(false)
+      setBusy(null)
     }
   }
 
   const onSimulate = async () => {
-    setBusy(true)
+    setBusy('simulate')
     try {
       const created = await simulateImport()
       setJob(created)
@@ -77,13 +77,13 @@ export function ImportPage() {
     } catch (e) {
       message.error((e as Error).message || '模拟失败')
     } finally {
-      setBusy(false)
+      setBusy(null)
     }
   }
 
   const onCommit = async () => {
     if (!job) return
-    setBusy(true)
+    setBusy('commit')
     try {
       const result = await commitImport(job.id)
       setStep(3)
@@ -95,7 +95,7 @@ export function ImportPage() {
     } catch (e) {
       message.error((e as Error).message || '确认导入失败')
     } finally {
-      setBusy(false)
+      setBusy(null)
     }
   }
 
@@ -106,12 +106,12 @@ export function ImportPage() {
 
       <div className="template-bar">
         <span className="template-label">导入模板（推荐先按模板整理再上传）</span>
-        <a className="btn-soft" href="/templates/journal-import-template.md" download>
+        <Button href="/templates/journal-import-template.md" download>
           下载 Markdown 模板
-        </a>
-        <a className="btn-soft" href="/templates/journal-import-template.docx" download>
+        </Button>
+        <Button href="/templates/journal-import-template.docx" download>
           下载 Word 模板
-        </a>
+        </Button>
       </div>
       <ul className="template-tips">
         <li>每篇以一级标题（MD 的 <code># 标题</code>）或单独一行标题开头</li>
@@ -138,18 +138,18 @@ export function ImportPage() {
           <div className="upload-title">拖入或选择文件</div>
           支持 .md / .docx / 含多篇 Markdown 的 zip
           <div className="upload-actions">
-            <button
-              type="button"
-              className="btn-soft"
-              disabled={busy}
+            <Button
+              type="primary"
+              disabled={busy !== null}
+              loading={busy === 'file'}
               onClick={() => inputRef.current?.click()}
             >
               选择文件
-            </button>
+            </Button>
             {useMock ? (
-              <button type="button" className="btn-soft" disabled={busy} onClick={onSimulate}>
+              <Button disabled={busy !== null} loading={busy === 'simulate'} onClick={onSimulate}>
                 模拟上传样例
-              </button>
+              </Button>
             ) : null}
           </div>
           {job?.status === 'parsing' ? (
@@ -189,12 +189,12 @@ export function ImportPage() {
             </div>
           ))}
           <div className="preview-actions">
-            <button type="button" className="btn-soft" onClick={() => setStep(1)}>
+            <Button disabled={busy !== null} onClick={() => setStep(1)}>
               重新上传
-            </button>
-            <button type="button" className="btn-primary" disabled={busy} onClick={onCommit}>
+            </Button>
+            <Button type="primary" loading={busy === 'commit'} onClick={onCommit}>
               确认导入
-            </button>
+            </Button>
           </div>
         </div>
       ) : null}
@@ -204,19 +204,10 @@ export function ImportPage() {
           <div className="upload-title">入库完成</div>
           <p>日记已写入列表。可到日记页查看新增条目。</p>
           <div className="upload-actions">
-            <button type="button" className="btn-primary" onClick={() => navigate('/diary')}>
+            <Button onClick={() => { setJob(null); setStep(1) }}>再导一份</Button>
+            <Button type="primary" onClick={() => navigate('/diary')}>
               去日记页
-            </button>
-            <button
-              type="button"
-              className="btn-soft"
-              onClick={() => {
-                setJob(null)
-                setStep(1)
-              }}
-            >
-              再导一份
-            </button>
+            </Button>
           </div>
         </div>
       ) : null}

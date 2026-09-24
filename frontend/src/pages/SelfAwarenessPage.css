@@ -10,7 +10,7 @@
   font-size: 22px;
   font-weight: 800;
   margin: 0 0 4px;
-  color: #2f7a5c;
+  color: var(--text-primary);
 }
 
 .page-sub {
@@ -26,13 +26,14 @@
   margin-bottom: 18px;
   padding: 14px;
   border-radius: var(--radius-lg);
-  background: linear-gradient(180deg, #ecfaf3 0%, var(--calm-soft) 100%);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
   box-shadow: var(--clay-out-sm);
 }
 
 .topic-bar button {
-  border: 0;
-  background: linear-gradient(180deg, #ffffff 0%, #fff6ea 100%);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-panel);
   border-radius: 16px;
   padding: 8px 14px;
   font: inherit;
@@ -108,6 +109,10 @@
   padding: 24px 4px;
   color: var(--text-secondary);
   font-size: 13px;
+}
+
+.self-empty p {
+  margin: 0 0 12px;
 }
 
 @media (prefers-reduced-motion: reduce) {

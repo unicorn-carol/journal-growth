@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { InputNumber, Modal, message } from 'antd'
+import { Button, InputNumber, Modal, message } from 'antd'
 import {
   createQuadrantNote,
   fetchGoodTimes,
@@ -75,6 +75,7 @@ export function GoodTimesPage() {
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null)
   const [activePointId, setActivePointId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [noteSaving, setNoteSaving] = useState(false)
 
   const activeLabel =
     QUADRANTS.find((q) => q.id === activeQuad)?.label ?? '高专注 · 低消耗'
@@ -158,6 +159,7 @@ export function GoodTimesPage() {
       message.warning('请先写下观察')
       return
     }
+    setNoteSaving(true)
     try {
       if (editingNoteId) {
         const updated = await updateQuadrantNote(editingNoteId, { body })
@@ -171,6 +173,8 @@ export function GoodTimesPage() {
       }
     } catch (e) {
       message.error((e as Error).message || '保存失败')
+    } finally {
+      setNoteSaving(false)
     }
   }
 
@@ -258,7 +262,12 @@ export function GoodTimesPage() {
             {loading ? ' …' : ''}
           </h5>
           {displayedSlices.length === 0 ? (
-            <div className="empty-hint">这个象限暂时没有能量标记切片</div>
+            <div className="empty-hint">
+              <p>这个象限暂时没有能量标记。</p>
+              <Button type="link" onClick={() => navigate('/diary')}>
+                去日记标注能量
+              </Button>
+            </div>
           ) : (
             displayedSlices.map((s) => (
               <button
@@ -287,9 +296,9 @@ export function GoodTimesPage() {
             onChange={(e) => setNoteDraft(e.target.value)}
           />
           <div className="note-actions">
-            <button type="button" className="btn-soft" onClick={saveNote}>
+            <Button type="primary" loading={noteSaving} onClick={() => void saveNote()}>
               保存观察
-            </button>
+            </Button>
           </div>
           {notes.map((n) => (
             <div
@@ -327,7 +336,7 @@ export function GoodTimesPage() {
           setLimitOpen(false)
           await loadChart(activeQuad, sort, next)
         }}
-        okText="确定"
+        okText="使用这个篇数"
         cancelText="取消"
       >
         <p className="zone-line">最近含能量标记的日记篇数</p>

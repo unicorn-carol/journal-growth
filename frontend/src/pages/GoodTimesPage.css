@@ -10,7 +10,7 @@
   font-size: 22px;
   font-weight: 800;
   margin: 0 0 4px;
-  color: #b45a2a;
+  color: var(--text-primary);
 }
 
 .good-page .page-sub {
@@ -23,9 +23,10 @@
   border: 0;
   border-radius: var(--radius-xl);
   overflow: hidden;
-  background: linear-gradient(160deg, #ffffff 0%, #fff6ea 100%);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
   margin-bottom: 16px;
-  box-shadow: var(--clay-out-lg);
+  box-shadow: var(--clay-out-sm);
 }
 
 .quad-tools {
@@ -34,7 +35,8 @@
   flex-wrap: wrap;
   align-items: center;
   padding: 14px 16px;
-  background: linear-gradient(180deg, #ffe8e8 0%, var(--focus-soft) 100%);
+  background: var(--bg-nav);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .range-pill {
@@ -43,8 +45,8 @@
   height: 30px;
   padding: 0 14px;
   border-radius: var(--radius-pill);
-  background: linear-gradient(180deg, #ffe8d6 0%, var(--drain-block) 100%);
-  color: #b45a2a;
+  background: linear-gradient(180deg, #ffffff 0%, #fff4e8 100%);
+  color: var(--text-primary);
   font-size: 12px;
   font-weight: 800;
   box-shadow: var(--clay-out-sm);
@@ -76,6 +78,11 @@
   box-shadow: var(--clay-press);
 }
 
+.btn-soft:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--topic) 45%, transparent);
+  outline-offset: 2px;
+}
+
 .quad-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -92,20 +99,11 @@
     box-shadow var(--duration-clay) var(--ease-bounce);
 }
 
-.quad-cell:nth-child(1) {
-  background: color-mix(in srgb, var(--focus-soft) 75%, white);
-}
-
-.quad-cell:nth-child(2) {
-  background: color-mix(in srgb, var(--joy-soft) 75%, white);
-}
-
-.quad-cell:nth-child(3) {
-  background: color-mix(in srgb, var(--topic-soft) 65%, white);
-}
-
+.quad-cell:nth-child(1),
+.quad-cell:nth-child(2),
+.quad-cell:nth-child(3),
 .quad-cell:nth-child(4) {
-  background: color-mix(in srgb, var(--drain-soft) 75%, white);
+  background: #fffdf9;
 }
 
 .quad-cell:nth-child(1),
@@ -134,7 +132,7 @@
 
 .quad-cell.active {
   box-shadow: var(--clay-press);
-  background: var(--drain-block);
+  background: #fff6ea;
 }
 
 .quad-cell .name {
@@ -284,6 +282,10 @@
   font-size: 13px;
   color: var(--text-secondary);
   padding: 8px 0;
+}
+
+.empty-hint p {
+  margin: 0;
 }
 
 @media (max-width: 960px) {

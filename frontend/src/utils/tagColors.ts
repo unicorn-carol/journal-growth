@@ -1,61 +1,72 @@
 import type { CSSProperties } from 'react'
 import type { TagKind } from '@/types/entry'
 
-/**
- * Mooda candy hues + clay chips.
- * Lanes: energy (CSS) · thinking (soft indigo/mint clay) · emotion (blob pills).
- */
-
+/** Mooda-like families. Same hue = same category. Keep in sync with backend default_tags.py. */
 export const ICON_COLORS = {
-  calm: '#7EC8A3',
-  joy: '#F5D56B',
-  low: '#6B9BD1',
-  anxious: '#B8A4E8',
+  joy: '#F2C14E',
+  calm: '#6FBF8A',
+  anger: '#E15B5B',
+  tense: '#9B84D6',
+  low: '#7E9CC8',
+  tender: '#E8896A',
   focus: '#E87A7A',
   drain: '#F0A06A',
   primary: '#7C6FF0',
   muted: '#A39A8E',
-  sky: '#7EB6D9',
-  indigo: '#6B5CEF',
-  violet: '#A78BFA',
-  teal: '#6FCFB2',
 } as const
 
-const THINKING_PALETTE = [
-  ICON_COLORS.teal,
-  ICON_COLORS.violet,
-  ICON_COLORS.indigo,
-  ICON_COLORS.sky,
-  ICON_COLORS.primary,
+const EMOTION_FAMILY = [
+  ICON_COLORS.joy,
   ICON_COLORS.calm,
-  ICON_COLORS.joy,
-  ICON_COLORS.drain,
+  ICON_COLORS.anger,
+  ICON_COLORS.tense,
   ICON_COLORS.low,
-  ICON_COLORS.anxious,
-  ICON_COLORS.teal,
-  ICON_COLORS.indigo,
-  ICON_COLORS.joy,
-  ICON_COLORS.sky,
-  ICON_COLORS.muted,
-  ICON_COLORS.focus,
-]
+  ICON_COLORS.tender,
+] as const
 
-/** Mooda-aligned emotion candy */
+const TOPIC_FAMILY = [
+  ICON_COLORS.tender,
+  ICON_COLORS.low,
+  ICON_COLORS.tense,
+  ICON_COLORS.calm,
+] as const
+
+/** 情绪按感受归类，同类同色。 */
 export const EMOTION_COLORS: Record<string, string> = {
-  平静: ICON_COLORS.calm,
   喜悦: ICON_COLORS.joy,
   期待: ICON_COLORS.joy,
-  感动: ICON_COLORS.focus,
+  平静: ICON_COLORS.calm,
   安心: ICON_COLORS.calm,
-  焦虑: ICON_COLORS.anxious,
-  疲惫: ICON_COLORS.low,
-  失落: ICON_COLORS.low,
-  愤怒: ICON_COLORS.drain,
-  孤独: ICON_COLORS.muted,
-  迷茫: ICON_COLORS.anxious,
-  紧张: ICON_COLORS.anxious,
   释然: ICON_COLORS.calm,
-  委屈: ICON_COLORS.focus,
+  愤怒: ICON_COLORS.anger,
+  焦虑: ICON_COLORS.tense,
+  紧张: ICON_COLORS.tense,
+  迷茫: ICON_COLORS.tense,
+  失落: ICON_COLORS.low,
+  疲惫: ICON_COLORS.low,
+  孤独: ICON_COLORS.low,
+  委屈: ICON_COLORS.low,
+  感动: ICON_COLORS.tender,
+}
+
+/** 话题按生活领域归类，同类同色。 */
+export const THINKING_COLORS: Record<string, string> = {
+  人际关系: ICON_COLORS.tender,
+  亲密关系: ICON_COLORS.tender,
+  家庭: ICON_COLORS.tender,
+  职业规划: ICON_COLORS.low,
+  工作状态: ICON_COLORS.low,
+  金钱观: ICON_COLORS.low,
+  学习成长: ICON_COLORS.low,
+  情绪: ICON_COLORS.tense,
+  价值判断: ICON_COLORS.tense,
+  人生观: ICON_COLORS.tense,
+  世界观: ICON_COLORS.tense,
+  死亡: ICON_COLORS.tense,
+  健康: ICON_COLORS.calm,
+  兴趣爱好: ICON_COLORS.calm,
+  生活探索: ICON_COLORS.calm,
+  重大事件: ICON_COLORS.calm,
 }
 
 const FALLBACK = ICON_COLORS.primary
@@ -69,7 +80,7 @@ function hashName(name: string): number {
 }
 
 export function thinkingColorAt(index: number): string {
-  return THINKING_PALETTE[index % THINKING_PALETTE.length] ?? FALLBACK
+  return TOPIC_FAMILY[index % TOPIC_FAMILY.length] ?? FALLBACK
 }
 
 export function colorForTag(
@@ -77,11 +88,11 @@ export function colorForTag(
   knownColor?: string | null,
   kind?: TagKind | null,
 ): string {
-  if (knownColor && knownColor.trim()) return knownColor
-  if (kind === 'emotion') {
-    return EMOTION_COLORS[name] ?? ICON_COLORS.anxious
-  }
-  return THINKING_PALETTE[hashName(name) % THINKING_PALETTE.length] ?? FALLBACK
+  if (kind === 'emotion' && EMOTION_COLORS[name]) return EMOTION_COLORS[name]
+  if (kind === 'thinking' && THINKING_COLORS[name]) return THINKING_COLORS[name]
+  if (knownColor && knownColor.trim()) return knownColor.trim()
+  const palette = kind === 'emotion' ? EMOTION_FAMILY : TOPIC_FAMILY
+  return palette[hashName(name) % palette.length] ?? FALLBACK
 }
 
 export function tint(color: string, alphaHex: string): string {
@@ -92,35 +103,25 @@ export function tint(color: string, alphaHex: string): string {
   return c
 }
 
-/** Clay pill — no left accent stripe; emotion = fuller blob, thinking = soft clay chip. */
+/** 日记列表、设置页等只读标签 — 与编辑器标签栏同一套 pastel 样式 */
 export function tagPillStyle(
   color: string,
   kind?: TagKind | null,
-  soft?: boolean,
+  _soft?: boolean,
 ): CSSProperties {
-  const fill = soft ? tint(color, '28') : tint(color, '48')
-  const common: CSSProperties = {
-    background: `linear-gradient(180deg, ${tint(color, soft ? '22' : '3A')} 0%, ${fill} 100%)`,
-    color: color,
-    border: 0,
-    fontWeight: 700,
-    boxShadow:
-      '4px 4px 10px rgba(58,52,46,0.08), inset 2px 2px 5px rgba(255,255,255,0.65), inset -1px -1px 3px rgba(58,52,46,0.06)',
-  }
-
-  if (kind === 'emotion') {
-    return {
-      ...common,
-      borderRadius: 999,
-      padding: '0 12px',
-    }
-  }
-
   return {
-    ...common,
-    borderRadius: 16,
+    ...selectableTagStyle(color, false, kind),
     padding: '0 12px',
   }
+}
+
+/** 篇内已选标签、侧栏卡片等展示用（非筛选 toggle） */
+export function entryTagDisplayStyle(
+  name: string,
+  kind: TagKind,
+  storedColor?: string | null,
+): CSSProperties {
+  return selectableTagStyle(colorForTag(name, storedColor, kind), false, kind)
 }
 
 const CLAY_RAISED =
@@ -154,9 +155,9 @@ export function selectableTagStyle(
 export function selectableNeutralStyle(selected: boolean): CSSProperties {
   return {
     background: selected
-      ? 'linear-gradient(180deg, #ddd6fe 0%, #cfc7fb 100%)'
-      : 'linear-gradient(180deg, #ffffff 0%, #fff6ea 100%)',
-    color: selected ? '#5b4fd6' : '#3a342e',
+      ? 'linear-gradient(180deg, #ede9fe 0%, #ddd6fe 100%)'
+      : '#ffffff',
+    color: selected ? '#5b4fd6' : '#1f2329',
     border: 0,
     fontWeight: selected ? 800 : 700,
     borderRadius: 16,

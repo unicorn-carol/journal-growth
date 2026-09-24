@@ -31,7 +31,7 @@ def _to_public(tag: Tag) -> TagPublic:
 def _default_color(kind: str, name: str) -> str:
     if kind == "thinking":
         return _THINKING_COLOR_BY_NAME.get(name, "#7C6FF0")
-    return default_color_for("emotion", name) or "#A855F7"
+    return default_color_for("emotion", name) or "#9B84D6"
 
 
 async def _sync_system_default_colors(db: AsyncSession, tags: list[Tag]) -> None:

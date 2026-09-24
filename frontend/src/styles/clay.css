@@ -1,26 +1,26 @@
 /**
  * Claymorphism utilities — theme-adapted (cream + indigo/mint/lemon/coral).
- * No pink theme. Soft candy lanes for energy / topic / emotion.
+ * Paper stays cream. Color is reserved for emotion families, topic categories, and energy dots.
  */
 
 .clay-surface {
-  border: 0;
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  background: linear-gradient(160deg, #ffffff 0%, #fff8ee 100%);
-  box-shadow: var(--clay-out);
+  background: var(--bg-panel);
+  box-shadow: var(--clay-out-sm);
 }
 
 .clay-surface-lg {
-  border: 0;
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-xl);
-  background: linear-gradient(165deg, #ffffff 0%, #fff6ea 100%);
-  box-shadow: var(--clay-out-lg);
+  background: var(--bg-panel);
+  box-shadow: var(--clay-out);
 }
 
 .clay-inset {
-  border: 0;
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  background: linear-gradient(180deg, #f3ebe0 0%, #fffdf9 100%);
+  background: var(--bg-panel);
   box-shadow: var(--clay-inset);
 }
 
@@ -76,6 +76,19 @@
 .clay-btn:active {
   transform: scaleX(1.05) scaleY(0.9);
   box-shadow: var(--clay-press);
+}
+
+.clay-btn:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--topic) 45%, transparent);
+  outline-offset: 2px;
+}
+
+.clay-btn:disabled,
+.clay-btn[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .clay-btn--soft {

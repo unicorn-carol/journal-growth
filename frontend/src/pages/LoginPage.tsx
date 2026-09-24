@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Alert, Button, Form, Input, Space, message } from 'antd'
+import { Alert, Button, Form, Input, message } from 'antd'
 import { login, resendVerification, sendLoginCode } from '@/services/authService'
 import { useMock } from '@/services/api'
 import { useAuthStore } from '@/stores/useAuthStore'
@@ -165,12 +165,12 @@ export function LoginPage() {
             name="code"
             rules={[{ required: true, message: '请输入验证码' }]}
           >
-            <Space.Compact style={{ width: '100%' }}>
+            <div className="code-row">
               <Input placeholder="6 位验证码" maxLength={6} />
               <Button onClick={onSendCode} loading={sending}>
-                发送
+                发送验证码
               </Button>
-            </Space.Compact>
+            </div>
           </Form.Item>
           <Button type="primary" htmlType="submit" block loading={loading}>
             进入日记
@@ -178,7 +178,7 @@ export function LoginPage() {
         </Form>
 
         <p className="auth-hint">
-          流程：填写邮箱密码 → 点「发送」获取验证码 → 填入后登录
+          流程：填写邮箱密码 → 点「发送验证码」→ 填入后登录
           {useMock ? (
             <>
               <br />

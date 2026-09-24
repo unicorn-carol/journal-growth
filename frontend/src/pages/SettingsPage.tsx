@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Dropdown, Input, Modal, message } from 'antd'
+import { Button, Dropdown, Input, Modal, message } from 'antd'
 import type { MenuProps } from 'antd'
 import { changePassword, logout } from '@/services/authService'
 import {
@@ -30,6 +30,7 @@ export function SettingsPage() {
   } | null>(null)
   const [tagName, setTagName] = useState('')
   const [saving, setSaving] = useState(false)
+  const [pwdSaving, setPwdSaving] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -55,6 +56,8 @@ export function SettingsPage() {
   }
 
   const onChangePassword = async () => {
+    if (!currentPassword || !newPassword) return
+    setPwdSaving(true)
     try {
       await changePassword({
         current_password: currentPassword,
@@ -65,6 +68,8 @@ export function SettingsPage() {
       setNewPassword('')
     } catch (e) {
       message.error((e as Error).message || '修改失败')
+    } finally {
+      setPwdSaving(false)
     }
   }
 
@@ -194,9 +199,7 @@ export function SettingsPage() {
               {user?.email_verified ? '已验证' : '未验证'}
             </div>
           </div>
-          <button type="button" className="btn-soft" onClick={onLogout}>
-            退出登录
-          </button>
+          <Button onClick={onLogout}>退出登录</Button>
         </section>
 
         <section className="panel account-panel">
@@ -217,9 +220,14 @@ export function SettingsPage() {
               onChange={(e) => setNewPassword(e.target.value)}
             />
           </div>
-          <button type="button" className="btn-soft primary" onClick={onChangePassword}>
+          <Button
+            type="primary"
+            loading={pwdSaving}
+            disabled={!currentPassword || !newPassword}
+            onClick={() => void onChangePassword()}
+          >
             更新密码
-          </button>
+          </Button>
         </section>
       </div>
 

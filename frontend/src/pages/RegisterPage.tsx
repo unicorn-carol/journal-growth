@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Button, Form, Input, Space, message } from 'antd'
+import { Button, Form, Input, message } from 'antd'
 import { register } from '@/services/authService'
 
 type RegisterForm = {
@@ -84,12 +84,12 @@ export function RegisterPage() {
             name="code"
             rules={[{ required: true, message: '请输入验证码' }]}
           >
-            <Space.Compact style={{ width: '100%' }}>
+            <div className="code-row">
               <Input placeholder="6 位验证码" />
               <Button onClick={sendCode} loading={sending}>
-                发送
+                发送验证码
               </Button>
-            </Space.Compact>
+            </div>
           </Form.Item>
           <Form.Item
             label="密码"

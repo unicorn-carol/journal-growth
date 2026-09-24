@@ -31,6 +31,7 @@ import { createTag, listTags } from '@/services/tagService'
 import {
   colorForTag,
   selectableNeutralStyle,
+  entryTagDisplayStyle,
   selectableTagStyle,
 } from '@/utils/tagColors'
 import type {
@@ -793,7 +794,12 @@ export function DiaryWorkspacePage() {
             <div className="list-empty">还没有日记。点右上角「写日记」开始。</div>
           ) : null}
           {list.length > 0 && filteredList.length === 0 ? (
-            <div className="list-empty">没有符合筛选的日记。</div>
+            <div className="list-empty">
+              <p>没有符合筛选的日记。</p>
+              <button type="button" className="filter-clear" onClick={clearFilters}>
+                清空筛选
+              </button>
+            </div>
           ) : null}
           {grouped.map(([month, items]) => (
             <div key={month} className="month-block">
@@ -867,7 +873,7 @@ export function DiaryWorkspacePage() {
                 <Button size="small" danger ghost onClick={onDelete}>
                   删除
                 </Button>
-                <Button size="small" loading={saving} onClick={onSave}>
+                <Button size="small" type="primary" loading={saving} onClick={onSave}>
                   保存
                 </Button>
               </div>
@@ -881,11 +887,7 @@ export function DiaryWorkspacePage() {
                   <span
                     key={t.id}
                     className="entry-tag-pill"
-                    style={selectableTagStyle(
-                      colorForTag(t.name, tagColorById.get(t.id), t.kind),
-                      true,
-                      t.kind,
-                    )}
+                    style={entryTagDisplayStyle(t.name, t.kind, tagColorById.get(t.id))}
                   >
                     <span>{t.name}</span>
                     <button
