@@ -68,7 +68,7 @@ python3 -c "import secrets; print(secrets.token_urlsafe(48))"
 |------|----------|------|
 | **Build failed** | Docker 里 `pip install -e .` 失败 | 使用最新 `main`（已修复 setuptools 包发现） |
 | **Crashed** | `CORS_ORIGINS` 不是 JSON 数组 | 用 `["https://你的域名.up.railway.app"]`；或只填单个 URL（新版本已兼容） |
-| **Crashed** | 连不上 Postgres | 画布上 Postgres 已 Running；Web 的 `DATABASE_URL` 为 **Reference** 指向 Postgres |
+| **Crashed** | 连不上 Postgres | 画布上 Postgres 已 Running；Web 的 `DATABASE_URL` 为 **Reference** 指向 Postgres（用私有 `DATABASE_URL`，不要用 `DATABASE_PUBLIC_URL`） |
 | **Crashed** | 启动日志 `ValidationError` / `JWT_SECRET` | 在 Web Variables 补 `JWT_SECRET` |
 | 域名 502 | 公网端口与进程不一致 | Generate Domain 端口填 **Railway 注入的 `PORT`**（Variables 里可见，常见为 `8000` 或平台分配值） |
 

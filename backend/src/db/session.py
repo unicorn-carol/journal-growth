@@ -18,7 +18,7 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.pool import NullPool
 
-from src.config.settings import get_settings
+from src.config.settings import asyncpg_connect_args, get_settings
 
 logger = get_logger()
 
@@ -31,6 +31,7 @@ engine: AsyncEngine = create_async_engine(
     echo=bool(_settings.debug),
     future=True,
     poolclass=NullPool,
+    connect_args=asyncpg_connect_args(DATABASE_URL),
 )
 
 async_session_maker = async_sessionmaker(
@@ -65,8 +66,15 @@ async def init_db() -> None:
     from src.db import models  # noqa: F401
     from src.db.models import Base
 
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+    except Exception as exc:
+        logger.error(
+            "Database init failed — check DATABASE_URL references Postgres in same Railway project",
+            error=str(exc),
+        )
+        raise
     logger.info("Database initialized")
 
 

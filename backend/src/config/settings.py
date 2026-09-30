@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import json
 import os
+import ssl
 from pathlib import Path
 from typing import Any
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from pycore.core import BaseSettings, ConfigLoader
 
@@ -108,10 +110,22 @@ def normalize_database_url(url: str) -> str:
         url = "postgresql://" + url[len("postgres://") :]
     if url.startswith("postgresql://") and "+asyncpg" not in url:
         url = "postgresql+asyncpg://" + url[len("postgresql://") :]
-    # asyncpg prefers ssl=require over libpq sslmode=
-    if "sslmode=" in url and "ssl=" not in url:
-        url = url.replace("sslmode=", "ssl=")
+    # asyncpg does not understand libpq sslmode=; strip and use asyncpg_connect_args().
+    parsed = urlparse(url)
+    if parsed.query:
+        q = [(k, v) for k, v in parse_qsl(parsed.query, keep_blank_values=True) if k.lower() != "sslmode"]
+        url = urlunparse(parsed._replace(query=urlencode(q)))
     return url
+
+
+def asyncpg_connect_args(database_url: str) -> dict[str, Any]:
+    """SSL for Railway public proxy; private *.railway.internal needs no SSL."""
+    lower = database_url.lower()
+    if "railway.internal" in lower:
+        return {}
+    if "proxy.rlwy.net" in lower or "rlwy.net" in lower:
+        return {"ssl": ssl.create_default_context()}
+    return {}
 
 
 class AppSettings(BaseSettings):
