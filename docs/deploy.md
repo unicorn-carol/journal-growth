@@ -62,10 +62,25 @@ Browser  ──►  Railway Web (Docker)
 python3 -c "import secrets; print(secrets.token_urlsafe(48))"
 ```
 
+## 三.b 部署失败排查
+
+| 现象 | 常见原因 | 处理 |
+|------|----------|------|
+| **Build failed** | Docker 里 `pip install -e .` 失败 | 使用最新 `main`（已修复 setuptools 包发现） |
+| **Crashed** | `CORS_ORIGINS` 不是 JSON 数组 | 用 `["https://你的域名.up.railway.app"]`；或只填单个 URL（新版本已兼容） |
+| **Crashed** | 连不上 Postgres | 画布上 Postgres 已 Running；Web 的 `DATABASE_URL` 为 **Reference** 指向 Postgres |
+| **Crashed** | 启动日志 `ValidationError` / `JWT_SECRET` | 在 Web Variables 补 `JWT_SECRET` |
+| 域名 502 | 公网端口与进程不一致 | Generate Domain 端口填 **Railway 注入的 `PORT`**（Variables 里可见，常见为 `8000` 或平台分配值） |
+
+查看日志：**Deployments** → 失败记录 → **View Logs**（Build 失败看构建段；Crashed 看 **Deploy / Runtime** 段末尾）。
+
 ## 四、域名与首次访问
 
 1. Web 服务 → **Settings** → **Networking** → **Generate Domain**
-2. 把生成的 `https://….up.railway.app` 填回 `FRONTEND_PUBLIC_URL` 与 `CORS_ORIGINS`，再 Redeploy 一次
+2. 端口填 **Variables 里 Railway 提供的 `PORT`**（与容器监听一致；本镜像默认 `8000`，若平台注入别的值以平台为准）
+3. 把生成的 `https://….up.railway.app` 填回 `FRONTEND_PUBLIC_URL` 与 `CORS_ORIGINS`，再 Redeploy 一次  
+   `CORS_ORIGINS` 示例（整段复制，替换域名）：  
+   `["https://journal-growth-production.up.railway.app"]`
 3. 打开站点 → 注册账号
 4. 打开 Railway **Deploy Logs**，复制邮件验证链接（`MAIL_DEV_PRINT=true` 时不会真发信）完成验证后登录
 

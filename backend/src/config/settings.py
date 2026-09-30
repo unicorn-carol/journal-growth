@@ -71,6 +71,24 @@ _PAAS_ENV_KEYS = (
 )
 
 
+def _normalize_cors_origins(value: Any) -> list[str]:
+    """Accept JSON array or a single origin URL (common Railway typo)."""
+    if isinstance(value, list):
+        return [str(item).strip() for item in value if str(item).strip()]
+    if isinstance(value, str):
+        text = value.strip()
+        if not text:
+            return []
+        if text.startswith("["):
+            parsed = json.loads(text)
+            if isinstance(parsed, list):
+                return [str(item).strip() for item in parsed if str(item).strip()]
+        if "," in text:
+            return [part.strip() for part in text.split(",") if part.strip()]
+        return [text]
+    return []
+
+
 def _paas_env_overlay() -> dict[str, Any]:
     """Explicit allow-list overlay — not ConfigManager use_env=True."""
     out: dict[str, Any] = {}
@@ -143,6 +161,8 @@ def get_settings() -> AppSettings:
         raw.update(_paas_env_overlay())
         if "database_url" in raw and isinstance(raw["database_url"], str):
             raw["database_url"] = normalize_database_url(raw["database_url"])
+        if "cors_origins" in raw:
+            raw["cors_origins"] = _normalize_cors_origins(raw["cors_origins"])
         _settings = AppSettings.model_validate(raw)
     return _settings
 
