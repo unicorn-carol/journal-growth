@@ -20,9 +20,19 @@ Browser  ──►  Railway Web (Docker)
 
 ## 二、添加 Postgres
 
-1. 同一 Project 内 **New** → **Database** → **PostgreSQL**
-2. 打开 Web 服务 → **Variables** → **Add Reference** → 引用 Postgres 的 `DATABASE_URL`  
-   （或把 Postgres 的 `DATABASE_URL` 变量共享到 Web 服务）
+> **常见误区**：Postgres 不是在 `journal-growth` 服务的 **Settings** 里添加的，而是在**整个 Project 的画布**上添加第二个服务。
+
+1. 回到 Project 总览（能看到 `journal-growth` 卡片/方块的那一页；左上角 Project 名 → 不要停在单个服务的 Settings 里）。
+2. 在画布上添加数据库，任选一种方式：
+   - 右上角 **Create** / **+ New**（有的界面是 **Add Service**）→ **Database** → **PostgreSQL**；或
+   - 快捷键 **⌘K / Ctrl+K** → 搜索 **PostgreSQL** → 添加；或
+   - [PostgreSQL 模板](https://railway.com/template/postgres) → **Deploy to Railway** → 选当前 Project。
+3. 等待 Postgres 服务部署完成（画布上会出现 **Postgres** / **PostgreSQL** 方块，与 `journal-growth` 并列）。
+4. 把数据库连到 Web 服务：
+   - 点开 **journal-growth**（GitHub 那个）→ **Variables**
+   - **New Variable** → **Add Reference**（或 **Reference Variable**）
+   - 选择 **Postgres 服务** → 变量 **`DATABASE_URL`** → 保存  
+   （等价做法：在 Postgres 的 Variables 里复制 `DATABASE_URL`，到 Web 服务里新建同名变量粘贴；同一 Project 内优先用 Reference，避免密码不一致。）
 
 应用启动时会把 `postgresql://` 自动改成 `postgresql+asyncpg://`。
 
